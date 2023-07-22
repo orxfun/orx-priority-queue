@@ -1,11 +1,11 @@
 [package]
 name = "orx-priority-queue"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["orxfun"]
 description = "Priority queue traits and generalized d-ary heap implementations."
 license = "MIT"
-documentation = "https://docs.rs/orx-priority-queue/0.1.2/orx_priority_queue/"
+documentation = ""
 
 
 [dependencies]
