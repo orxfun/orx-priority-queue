@@ -1,0 +1,67 @@
+use super::heap::Heap;
+use crate::{positions::none::HeapPositionsNone, PriorityQueue};
+
+pub struct DaryHeap<N, K, const D: usize>
+where
+    N: Clone,
+    K: PartialOrd + Clone,
+{
+    heap: Heap<N, K, HeapPositionsNone, D>,
+}
+
+impl<N, K, const D: usize> Default for DaryHeap<N, K, D>
+where
+    N: Clone,
+    K: PartialOrd + Clone,
+{
+    fn default() -> Self {
+        Self {
+            heap: Heap {
+                tree: Vec::new(),
+                positions: HeapPositionsNone,
+            },
+        }
+    }
+}
+impl<N, K, const D: usize> DaryHeap<N, K, D>
+where
+    N: Clone,
+    K: PartialOrd + Clone,
+{
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            heap: Heap {
+                tree: Vec::with_capacity(capacity),
+                positions: HeapPositionsNone,
+            },
+        }
+    }
+}
+
+impl<N, K, const D: usize> PriorityQueue<N, K> for DaryHeap<N, K, D>
+where
+    N: Clone,
+    K: PartialOrd + Clone,
+{
+    fn len(&self) -> usize {
+        self.heap.len()
+    }
+    fn peek(&self) -> Option<&(N, K)> {
+        self.heap.peek()
+    }
+    fn clear(&mut self) {
+        self.heap.clear()
+    }
+    fn pop(&mut self) -> Option<(N, K)> {
+        self.heap.pop()
+    }
+    fn pop_node(&mut self) -> Option<N> {
+        self.heap.pop_node()
+    }
+    fn pop_key(&mut self) -> Option<K> {
+        self.heap.pop_key()
+    }
+    fn push(&mut self, node: N, key: K) {
+        self.heap.push(node, key)
+    }
+}

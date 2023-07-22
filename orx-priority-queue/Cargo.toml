@@ -1,0 +1,13 @@
+[package]
+name = "orx-priority-queue"
+version = "0.1.0"
+edition = "2021"
+authors = ["orxfun"]
+description = "Priority queue traits and generalized d-ary heap implementations."
+license = "MIT"
+
+[dependencies]
+
+[dev-dependencies]
+itertools = "0.11.0"
+rand = "0.8.5"
