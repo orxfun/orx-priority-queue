@@ -47,7 +47,29 @@ and the size of the queue is likely to get close to total number of candidates.
 ## Example
 
 ```rust
-fn operate_on_priority_queue<P>(mut pq: P)
+fn test_priority_queue<P>(mut pq: P)
+where
+    P: PriorityQueue<usize, f64>,
+{
+    pq.clear();
+
+    pq.push(0, 42.0);
+    assert_eq!(Some(&(0, 42.0)), pq.peek());
+
+    let popped = pq.pop();
+    assert_eq!(Some((0, 42.0)), pq.pop());
+    assert!(pq.is_empty());
+
+    pq.push(0, 42.0);
+    pq.push(1, 7.0);
+    pq.push(2, 24.0);
+    pq.push(10, 3.0);
+
+    while let Some(popped) = pq.pop() {
+        println!("pop {}", popped);
+    }
+}
+fn test_priority_queue_deckey<P>(mut pq: P)
 where
     P: PriorityQueueDecKey<usize, f64>,
 {
@@ -73,6 +95,20 @@ where
     while let Some(popped) = pq.pop() {
         println!("pop {}", popped);
     }
+}
+
+fn main() {
+    use orx_priority_queue::*;
+
+    // d of the d-ary heap
+    const D: usize = 4;
+
+    test_priority_queue(DaryHeap::<usize, f64, D>::default());
+    test_priority_queue(DaryHeapWithMap::<usize, f64, D>::default());
+    test_priority_queue(DaryHeapOfIndices::<usize, f64, D>::with_upper_limit(100));
+    
+    test_priority_queue_deckey(DaryHeapWithMap::<usize, f64, D>::default());
+    test_priority_queue_deckey(DaryHeapOfIndices::<usize, f64, D>::with_upper_limit(100));
 }
 ```
 
