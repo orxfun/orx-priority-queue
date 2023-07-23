@@ -19,10 +19,10 @@ where
 {
     pub fn with_upper_limit(upper_limit: usize) -> Self {
         Self {
-            heap: Heap {
-                tree: Vec::with_capacity(upper_limit),
-                positions: HeapPositionsHasIndex::with_upper_limit(upper_limit),
-            },
+            heap: Heap::new(
+                Some(upper_limit),
+                HeapPositionsHasIndex::with_upper_limit(upper_limit),
+            ),
         }
     }
 }
