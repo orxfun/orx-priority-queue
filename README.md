@@ -1,4 +1,4 @@
-ca# orx-priority-queue
+# orx-priority-queue
 Priority queue traits; binary and generalized d-ary heap implementations.
 
 ## Traits
@@ -31,7 +31,7 @@ are often made available through usage of additional memory.
 
 ## Implementations
 
-### d-ary Heap
+### d-ary heap
 
 The core [d-ary heap](https://en.wikipedia.org/wiki/D-ary_heap) is implemented thanks to const generics.
 Three structs are created from this core struct:
@@ -43,6 +43,17 @@ This might be considered as the default way to extend the heap to enable additio
 * `DaryHeapOfIndices<N, K, const D: usize>` where `N: HasIndex` which implements `PriorityQueueDecKey<N, K>: PriorityQueue<N, K>`.
 This variant is and alternative to the hash-map extention and is particularly useful in algorithms where nodes to be enqueued are sampled from a closed set with known elements
 and the size of the queue is likely to get close to total number of candidates.
+
+### Special traversal for d=2: binary-heap
+
+const generics further allows to use special arithmetics for the special case where d=2; i.e.,
+when d-ary heap is the binary heap.
+In particular, one addition/subtraction is avoided during the traversal through the tree.
+
+However, overall performance of the queues depends on the use case,
+ratio of push an decrease-key operations, etc.
+Benchmarks will follow.
+
 
 ## Example
 

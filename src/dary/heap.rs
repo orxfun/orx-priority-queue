@@ -1,3 +1,4 @@
+use super::daryheap_const_helpers::{add_offset_to_tree, child_of, init_tree, offset, parent_of};
 use crate::{
     positions::heap_positions::{HeapPositions, HeapPositionsDecKey},
     PriorityQueue, PriorityQueueDecKey,
@@ -10,8 +11,8 @@ where
     K: PartialOrd + Clone,
     P: HeapPositions<N>,
 {
-    pub tree: Vec<(N, K)>,
-    pub positions: P,
+    tree: Vec<(N, K)>,
+    positions: P,
 }
 
 impl<N, K, P, const D: usize> Heap<N, K, P, D>
@@ -20,8 +21,13 @@ where
     K: PartialOrd + Clone,
     P: HeapPositions<N>,
 {
+    pub fn new(capacity: Option<usize>, positions: P) -> Self {
+        let mut tree = init_tree::<N, K>(capacity);
+        unsafe { add_offset_to_tree::<N, K, D>(&mut tree) };
+        Self { tree, positions }
+    }
     fn heapify_up(&mut self, starting_position: usize) {
-        if starting_position == 0 {
+        if starting_position == offset::<D>() {
             return;
         }
 
@@ -41,7 +47,7 @@ where
                 .update_position_of(&self.tree[parent].0, child);
             self.tree[child] = self.tree[parent].clone();
             child = parent;
-            if child == 0 {
+            if child == offset::<D>() {
                 break;
             }
             parent = parent_of::<D>(child);
@@ -51,11 +57,11 @@ where
         self.tree[child] = node;
     }
     fn heapify_down(&mut self, starting_position: usize) {
-        let num_nodes = self.tree.len();
+        let tree_len = self.tree.len();
 
         let mut parent = starting_position;
         let first_child = child_of::<D>(starting_position);
-        if first_child >= num_nodes {
+        if first_child >= tree_len {
             return;
         }
 
@@ -63,7 +69,7 @@ where
         let mut best_child_key = self.tree[best_child].1.clone();
         for i in 1..D {
             let next_child = first_child + i;
-            if next_child >= num_nodes {
+            if next_child >= tree_len {
                 break;
             } else if self.tree[next_child].1 < best_child_key {
                 best_child = first_child + i;
@@ -86,14 +92,14 @@ where
 
             parent = best_child;
             let first_child = child_of::<D>(parent);
-            if first_child >= num_nodes {
+            if first_child >= tree_len {
                 break;
             }
             best_child = first_child;
             best_child_key = self.tree[best_child].1.clone();
             for i in 1..D {
                 let next_child = first_child + i;
-                if next_child >= num_nodes {
+                if next_child >= tree_len {
                     break;
                 } else if self.tree[next_child].1 < best_child_key {
                     best_child = first_child + i;
@@ -106,12 +112,12 @@ where
         self.tree[parent] = node;
     }
     fn remove_and_heapify(&mut self, starting_position: usize) {
-        let num_nodes = self.tree.len();
-        let last = num_nodes - 1;
-        if num_nodes == 1 {
-            debug_assert_eq!(0, starting_position);
-            self.positions.remove(&self.tree[0].0);
-            self.tree.clear();
+        let tree_len = self.tree.len();
+        let last = tree_len - 1;
+        if tree_len == offset::<D>() + 1 {
+            debug_assert_eq!(offset::<D>(), starting_position);
+            self.positions.remove(&self.tree[offset::<D>()].0);
+            self.tree.truncate(offset::<D>());
         } else if starting_position == last {
             self.positions.remove(&self.tree[starting_position].0);
             self.tree.truncate(last);
@@ -125,7 +131,7 @@ where
             self.tree.truncate(last);
 
             let key_of_disturbed = &self.tree[starting_position].1;
-            if starting_position > 0
+            if starting_position > offset::<D>()
                 && key_of_disturbed < &self.tree[parent_of::<D>(starting_position)].1
             {
                 self.heapify_up(starting_position);
@@ -136,25 +142,6 @@ where
     }
 }
 
-const fn parent_of<const D: usize>(child: usize) -> usize {
-    match D {
-        2 => (child - 1) >> 1,
-        4 => (child - 1) >> 2,
-        8 => (child - 1) >> 3,
-        16 => (child - 1) >> 4,
-        _ => (child - 1) / D,
-    }
-}
-const fn child_of<const D: usize>(parent: usize) -> usize {
-    match D {
-        2 => (parent << 1) + 1,
-        4 => (parent << 2) + 1,
-        8 => (parent << 3) + 1,
-        16 => (parent << 4) + 1,
-        _ => D * parent + 1,
-    }
-}
-
 impl<N, K, P, const D: usize> PriorityQueue<N, K> for Heap<N, K, P, D>
 where
     N: Clone,
@@ -162,49 +149,52 @@ where
     P: HeapPositions<N>,
 {
     fn len(&self) -> usize {
-        self.tree.len()
+        self.tree.len() - offset::<D>()
+    }
+    fn is_empty(&self) -> bool {
+        self.tree.len() == offset::<D>()
     }
 
     fn peek(&self) -> Option<&(N, K)> {
-        self.tree.first()
+        self.tree.get(offset::<D>())
     }
 
     fn as_slice(&self) -> &[(N, K)] {
-        &self.tree
+        &self.tree[offset::<D>()..]
     }
 
     fn clear(&mut self) {
-        self.tree.clear();
+        self.tree.truncate(offset::<D>());
         self.positions.clear();
     }
 
     fn pop(&mut self) -> Option<(N, K)> {
-        if self.tree.is_empty() {
+        if self.tree.len() == offset::<D>() {
             None
         } else {
-            self.positions.remove(&self.tree[0].0);
-            let popped = self.tree.swap_remove(0);
-            self.heapify_down(0);
+            self.positions.remove(&self.tree[offset::<D>()].0);
+            let popped = self.tree.swap_remove(offset::<D>());
+            self.heapify_down(offset::<D>());
             Some(popped)
         }
     }
     fn pop_node(&mut self) -> Option<N> {
-        if self.tree.is_empty() {
+        if self.tree.len() == offset::<D>() {
             None
         } else {
-            self.positions.remove(&self.tree[0].0);
-            let popped = self.tree.swap_remove(0).0;
-            self.heapify_down(0);
+            self.positions.remove(&self.tree[offset::<D>()].0);
+            let popped = self.tree.swap_remove(offset::<D>()).0;
+            self.heapify_down(offset::<D>());
             Some(popped)
         }
     }
     fn pop_key(&mut self) -> Option<K> {
-        if self.tree.is_empty() {
+        if self.tree.len() == offset::<D>() {
             None
         } else {
-            self.positions.remove(&self.tree[0].0);
-            let popped = self.tree.swap_remove(0).1;
-            self.heapify_down(0);
+            self.positions.remove(&self.tree[offset::<D>()].0);
+            let popped = self.tree.swap_remove(offset::<D>()).1;
+            self.heapify_down(offset::<D>());
             Some(popped)
         }
     }
@@ -217,15 +207,15 @@ where
     }
 
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
-        if self.tree.is_empty() || self.tree[0].1 >= key {
+        if self.tree.len() == offset::<D>() || self.tree[offset::<D>()].1 >= key {
             (node, key)
         } else {
-            self.positions.remove(&self.tree[0].0);
-            self.positions.insert(&node, 0);
-            let popped_node = self.tree[0].clone();
-            self.tree[0].0 = node;
-            self.tree[0].1 = key;
-            self.heapify_down(0);
+            self.positions.remove(&self.tree[offset::<D>()].0);
+            self.positions.insert(&node, offset::<D>());
+            let popped_node = self.tree[offset::<D>()].clone();
+            self.tree[offset::<D>()].0 = node;
+            self.tree[offset::<D>()].1 = key;
+            self.heapify_down(offset::<D>());
             popped_node
         }
     }

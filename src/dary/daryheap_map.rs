@@ -18,10 +18,7 @@ where
 {
     fn default() -> Self {
         Self {
-            heap: Heap {
-                tree: Vec::new(),
-                positions: HeapPositionsMap::default(),
-            },
+            heap: Heap::new(None, HeapPositionsMap::default()),
         }
     }
 }
@@ -32,10 +29,7 @@ where
 {
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
-            heap: Heap {
-                tree: Vec::with_capacity(capacity),
-                positions: HeapPositionsMap::with_capacity(capacity),
-            },
+            heap: Heap::new(Some(capacity), HeapPositionsMap::with_capacity(capacity)),
         }
     }
 }
