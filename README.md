@@ -1,4 +1,4 @@
-# orx-priority-queue
+ca# orx-priority-queue
 Priority queue traits; binary and generalized d-ary heap implementations.
 
 ## Traits
@@ -47,17 +47,20 @@ and the size of the queue is likely to get close to total number of candidates.
 ## Example
 
 ```rust
+use orx_priority_queue::{PriorityQueue, PriorityQueueDecKey};
+
 fn test_priority_queue<P>(mut pq: P)
 where
     P: PriorityQueue<usize, f64>,
 {
+    println!("\ntest_priority_queue");
     pq.clear();
 
     pq.push(0, 42.0);
     assert_eq!(Some(&(0, 42.0)), pq.peek());
 
     let popped = pq.pop();
-    assert_eq!(Some((0, 42.0)), pq.pop());
+    assert_eq!(Some((0, 42.0)), popped);
     assert!(pq.is_empty());
 
     pq.push(0, 42.0);
@@ -66,34 +69,35 @@ where
     pq.push(10, 3.0);
 
     while let Some(popped) = pq.pop() {
-        println!("pop {}", popped);
+        println!("pop {:?}", popped);
     }
 }
 fn test_priority_queue_deckey<P>(mut pq: P)
 where
     P: PriorityQueueDecKey<usize, f64>,
 {
+    println!("\ntest_priority_queue_deckey");
     pq.clear();
 
     pq.push(0, 42.0);
     assert_eq!(Some(&(0, 42.0)), pq.peek());
 
     let popped = pq.pop();
-    assert_eq!(Some((0, 42.0)), pq.pop());
+    assert_eq!(Some((0, 42.0)), popped);
     assert!(pq.is_empty());
 
     pq.push(0, 42.0);
-    assert!(pq.contains(0));
+    assert!(pq.contains(&0));
 
-    pq.decrease_key(0, 7.0);
+    pq.decrease_key(&0, &7.0);
     assert_eq!(Some(&(0, 7.0)), pq.peek());
 
-    let is_key_decreased = pq.try_decrease_key(0, 10.0);
-    assert!(is_key_decreased);
+    let is_key_decreased = pq.try_decrease_key(&0, &10.0);
+    assert!(!is_key_decreased);
     assert_eq!(Some(&(0, 7.0)), pq.peek());
 
     while let Some(popped) = pq.pop() {
-        println!("pop {}", popped);
+        println!("pop {:?}", popped);
     }
 }
 
@@ -106,7 +110,7 @@ fn main() {
     test_priority_queue(DaryHeap::<usize, f64, D>::default());
     test_priority_queue(DaryHeapWithMap::<usize, f64, D>::default());
     test_priority_queue(DaryHeapOfIndices::<usize, f64, D>::with_upper_limit(100));
-    
+
     test_priority_queue_deckey(DaryHeapWithMap::<usize, f64, D>::default());
     test_priority_queue_deckey(DaryHeapOfIndices::<usize, f64, D>::with_upper_limit(100));
 }
