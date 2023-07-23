@@ -1,4 +1,4 @@
-pub(crate) trait HeapPositions<N> {
+pub(crate) trait HeapPositions<N>: Clone {
     fn contains(&self, node: &N) -> bool;
     fn position_of(&self, node: &N) -> Option<usize>;
     fn clear(&mut self);

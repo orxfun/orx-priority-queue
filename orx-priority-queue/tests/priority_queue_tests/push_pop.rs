@@ -8,8 +8,8 @@ pub fn test_push_pop<P>(mut pq: P)
 where
     P: PriorityQueue<usize, f64>,
 {
-    const N: usize = 3;
-    const M: usize = 3;
+    const N: usize = 70;
+    const M: usize = 50;
 
     pq.clear();
     assert_eq!(0, pq.len());

@@ -1,6 +1,6 @@
 /// A priority queue which allows pushing ([N], [K])=(node, key) pairs to the collection,
 /// and popping the foremost element having the lowest key.
-pub trait PriorityQueue<N, K>
+pub trait PriorityQueue<N, K>: Clone
 where
     K: PartialOrd,
 {
@@ -30,4 +30,12 @@ where
 
     /// Pushes the given ([node], [key]) pair to the queue.
     fn push(&mut self, node: N, key: K);
+
+    /// Performs the [push] with given ([node], [key]) followed by the [pop] operation.
+    ///
+    /// Since the queue cannot be empty after the push, the return type is not optional.
+    ///
+    /// The reason of merging the calls is that handling two instructions at once
+    /// is more efficient for certain implementations, such as the binary heap,
+    fn push_then_pop(&mut self, node: N, key: K) -> (N, K);
 }

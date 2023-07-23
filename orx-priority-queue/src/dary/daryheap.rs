@@ -1,6 +1,7 @@
 use super::heap::Heap;
 use crate::{positions::none::HeapPositionsNone, PriorityQueue};
 
+#[derive(Clone)]
 pub struct DaryHeap<N, K, const D: usize>
 where
     N: Clone,
@@ -63,5 +64,8 @@ where
     }
     fn push(&mut self, node: N, key: K) {
         self.heap.push(node, key)
+    }
+    fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
+        self.heap.push_then_pop(node, key)
     }
 }

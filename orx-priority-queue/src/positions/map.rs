@@ -2,7 +2,7 @@ use std::{collections::HashMap, hash::Hash};
 
 use super::heap_positions::{HeapPositions, HeapPositionsDecKey};
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct HeapPositionsMap<N>
 where
     N: Eq + Hash + Clone,
