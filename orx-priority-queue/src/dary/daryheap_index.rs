@@ -3,6 +3,7 @@ use crate::{
     positions::has_index::HeapPositionsHasIndex, HasIndex, PriorityQueue, PriorityQueueDecKey,
 };
 
+#[derive(Clone)]
 pub struct DaryHeapOfIndices<N, K, const D: usize>
 where
     N: HasIndex,
@@ -51,6 +52,9 @@ where
     }
     fn push(&mut self, node: N, key: K) {
         self.heap.push(node, key)
+    }
+    fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
+        self.heap.push_then_pop(node, key)
     }
 }
 impl<N, K, const D: usize> PriorityQueueDecKey<N, K> for DaryHeapOfIndices<N, K, D>

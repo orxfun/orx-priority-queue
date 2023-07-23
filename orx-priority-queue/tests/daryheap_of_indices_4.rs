@@ -42,6 +42,15 @@ fn push_pop_randomized() {
 }
 
 #[test]
+fn push_then_pop() {
+    test_push_then_pop(new_heap())
+}
+#[test]
+fn push_then_pop_randomized() {
+    test_push_then_pop_randomized(new_heap())
+}
+
+#[test]
 fn contains() {
     test_contains(new_heap());
 }

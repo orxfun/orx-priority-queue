@@ -3,6 +3,7 @@ use crate::{
     PriorityQueue, PriorityQueueDecKey,
 };
 
+#[derive(Clone)]
 pub(crate) struct Heap<N, K, P, const D: usize>
 where
     N: Clone,
@@ -209,6 +210,20 @@ where
         self.positions.insert(&node, position);
         self.tree.push((node, key));
         self.heapify_up(position);
+    }
+
+    fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
+        if self.tree.is_empty() || self.tree[0].1 >= key {
+            (node, key)
+        } else {
+            self.positions.remove(&self.tree[0].0);
+            self.positions.insert(&node, 0);
+            let popped_node = self.tree[0].clone();
+            self.tree[0].0 = node;
+            self.tree[0].1 = key;
+            self.heapify_down(0);
+            popped_node
+        }
     }
 }
 

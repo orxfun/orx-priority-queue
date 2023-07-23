@@ -1,6 +1,6 @@
 use super::heap_positions::HeapPositions;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub(crate) struct HeapPositionsNone;
 
 impl<N> HeapPositions<N> for HeapPositionsNone {

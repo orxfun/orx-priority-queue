@@ -5,7 +5,7 @@ use std::marker::PhantomData;
 /// using usize::MAX as None
 const NONE: usize = usize::MAX;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct HeapPositionsHasIndex<N>
 where
     N: HasIndex,
