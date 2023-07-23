@@ -48,6 +48,9 @@ where
     fn len(&self) -> usize {
         self.heap.len()
     }
+    fn as_slice(&self) -> &[(N, K)] {
+        self.heap.as_slice()
+    }
     fn peek(&self) -> Option<&(N, K)> {
         self.heap.peek()
     }

@@ -22,6 +22,11 @@ fn is_empty() {
 }
 
 #[test]
+fn as_slice() {
+    test_as_slice(new_heap())
+}
+
+#[test]
 fn peek() {
     test_peek(new_heap())
 }

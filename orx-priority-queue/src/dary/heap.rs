@@ -169,6 +169,10 @@ where
         self.tree.first()
     }
 
+    fn as_slice(&self) -> &[(N, K)] {
+        &self.tree
+    }
+
     fn clear(&mut self) {
         self.tree.clear();
         self.positions.clear();

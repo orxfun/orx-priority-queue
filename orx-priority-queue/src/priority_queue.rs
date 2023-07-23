@@ -11,6 +11,11 @@ where
     fn is_empty(&self) -> bool {
         self.len() == 0
     }
+
+    /// Returns the nodes and keys currently in the queue as a slice;
+    /// not necessarily sorted.
+    fn as_slice(&self) -> &[(N, K)];
+
     /// Returns, without popping, a reference to the foremost element of the queue;
     /// returns None if the queue is empty.
     fn peek(&self) -> Option<&(N, K)>;
