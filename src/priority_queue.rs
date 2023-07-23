@@ -1,4 +1,4 @@
-/// A priority queue which allows pushing ([N], [K])=(node, key) pairs to the collection,
+/// A priority queue which allows pushing (N, K)=(node, key) pairs to the collection,
 /// and popping the foremost element having the lowest key.
 pub trait PriorityQueue<N, K>: Clone
 where
@@ -33,10 +33,10 @@ where
     /// returns None if the queue is empty.
     fn pop_key(&mut self) -> Option<K>;
 
-    /// Pushes the given ([node], [key]) pair to the queue.
+    /// Pushes the given (`node`, `key`) pair to the queue.
     fn push(&mut self, node: N, key: K);
 
-    /// Performs the [push] with given ([node], [key]) followed by the [pop] operation.
+    /// Performs the push with given (`node`, `key`) followed by the pop operation.
     ///
     /// Since the queue cannot be empty after the push, the return type is not optional.
     ///
