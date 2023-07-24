@@ -14,4 +14,8 @@ impl<N> HeapPositions<N> for HeapPositionsNone {
     fn insert(&mut self, _node: &N, _pos: usize) {}
     fn remove(&mut self, _node: &N) {}
     fn update_position_of(&mut self, _node: &N, _pos: usize) {}
+
+    fn is_valid<K>(&self, _offset: usize, _tree: &[(N, K)]) -> bool {
+        true
+    }
 }

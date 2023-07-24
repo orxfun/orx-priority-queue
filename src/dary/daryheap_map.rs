@@ -2,7 +2,7 @@ use super::heap::Heap;
 use crate::{positions::map::HeapPositionsMap, PriorityQueue, PriorityQueueDecKey};
 use std::hash::Hash;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct DaryHeapWithMap<N, K, const D: usize>
 where
     N: Eq + Hash + Clone,
@@ -65,6 +65,11 @@ where
     }
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
         self.heap.push_then_pop(node, key)
+    }
+
+    #[cfg(test)]
+    fn is_valid(&self) -> bool {
+        self.heap.is_valid()
     }
 }
 impl<N, K, const D: usize> PriorityQueueDecKey<N, K> for DaryHeapWithMap<N, K, D>

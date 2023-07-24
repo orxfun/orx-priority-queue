@@ -40,7 +40,6 @@ where
 
     // pop remaining
     while let Some((node, key)) = pq.pop() {
-        dbg!(node, key);
         assert!(!removed.contains(&node));
         assert_eq!(vec[node], key);
     }

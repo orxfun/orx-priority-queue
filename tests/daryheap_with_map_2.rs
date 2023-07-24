@@ -86,6 +86,11 @@ fn remove() {
 }
 
 #[test]
+fn mixed() {
+    test_mixed(new_heap());
+}
+
+#[test]
 fn decrease_key_or_push() {
     test_change_key_or_push(new_heap(), ChangeKeyMethod::Decrease);
 }
@@ -98,9 +103,4 @@ fn update_key_or_push() {
 #[test]
 fn try_decrease_key_or_push() {
     test_change_key_or_push(new_heap(), ChangeKeyMethod::TryDecrease);
-}
-
-#[test]
-fn as_slice_mappo() {
-    test_as_slice(new_heap())
 }

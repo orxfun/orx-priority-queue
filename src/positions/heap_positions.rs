@@ -5,6 +5,8 @@ pub(crate) trait HeapPositions<N>: Clone {
     fn insert(&mut self, node: &N, position: usize);
     fn remove(&mut self, node: &N);
     fn update_position_of(&mut self, node: &N, position: usize);
+
+    fn is_valid<K>(&self, offset: usize, tree: &[(N, K)]) -> bool;
 }
 
 pub(crate) trait HeapPositionsDecKey<N>: HeapPositions<N> {}

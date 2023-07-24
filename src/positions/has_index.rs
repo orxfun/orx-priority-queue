@@ -55,6 +55,19 @@ where
         debug_assert!(self.contains(node), "updating position of an absent node");
         self.positions[node.index()] = position;
     }
+
+    fn is_valid<K>(&self, offset: usize, tree: &[(N, K)]) -> bool {
+        let mut count = 0;
+        for (node, &pos) in self.positions.iter().enumerate() {
+            if pos != NONE {
+                count += 1;
+                if tree[pos].0.index() != node {
+                    return false;
+                }
+            }
+        }
+        count == tree.len() - offset
+    }
 }
 
 impl<N> HeapPositionsDecKey<N> for HeapPositionsHasIndex<N> where N: HasIndex {}

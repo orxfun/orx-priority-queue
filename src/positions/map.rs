@@ -1,6 +1,5 @@
-use std::{collections::HashMap, hash::Hash};
-
 use super::heap_positions::{HeapPositions, HeapPositionsDecKey};
+use std::{collections::HashMap, hash::Hash};
 
 #[derive(Clone, Debug)]
 pub struct HeapPositionsMap<N>
@@ -53,6 +52,23 @@ where
     }
     fn update_position_of(&mut self, node: &N, positions: usize) {
         *self.map.get_mut(node).unwrap() = positions;
+    }
+
+    fn is_valid<K>(&self, offset: usize, tree: &[(N, K)]) -> bool {
+        if self.map.len() != tree.len() - offset {
+            false
+        } else {
+            for (node, &position) in &self.map {
+                if let Some(tree_node) = tree.get(position) {
+                    if node != &tree_node.0 {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+            true
+        }
     }
 }
 

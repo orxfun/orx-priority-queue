@@ -4,7 +4,7 @@ use crate::{
     PriorityQueue, PriorityQueueDecKey,
 };
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub(crate) struct Heap<N, K, P, const D: usize>
 where
     N: Clone,
@@ -172,6 +172,8 @@ where
         if self.tree.len() == offset::<D>() {
             None
         } else {
+            let last_node = &self.tree[self.tree.len() - 1].0;
+            self.positions.update_position_of(last_node, offset::<D>());
             self.positions.remove(&self.tree[offset::<D>()].0);
             let popped = self.tree.swap_remove(offset::<D>());
             self.heapify_down(offset::<D>());
@@ -182,6 +184,8 @@ where
         if self.tree.len() == offset::<D>() {
             None
         } else {
+            let last_node = &self.tree[self.tree.len() - 1].0;
+            self.positions.update_position_of(last_node, offset::<D>());
             self.positions.remove(&self.tree[offset::<D>()].0);
             let popped = self.tree.swap_remove(offset::<D>()).0;
             self.heapify_down(offset::<D>());
@@ -192,6 +196,8 @@ where
         if self.tree.len() == offset::<D>() {
             None
         } else {
+            let last_node = &self.tree[self.tree.len() - 1].0;
+            self.positions.update_position_of(last_node, offset::<D>());
             self.positions.remove(&self.tree[offset::<D>()].0);
             let popped = self.tree.swap_remove(offset::<D>()).1;
             self.heapify_down(offset::<D>());
@@ -217,6 +223,34 @@ where
             self.tree[offset::<D>()].1 = key;
             self.heapify_down(offset::<D>());
             popped_node
+        }
+    }
+
+    #[cfg(test)]
+    fn is_valid(&self) -> bool {
+        if !self.positions.is_valid(offset::<D>(), &self.tree) {
+            false
+        } else {
+            fn is_valid_downwards<N, K, const D: usize>(parent: usize, tree: &[(N, K)]) -> bool
+            where
+                K: PartialOrd,
+            {
+                for i in 0..D {
+                    let child = child_of::<D>(parent) + i;
+                    if child >= tree.len() {
+                        return true;
+                    } else if tree[child].1 < tree[parent].1 {
+                        return false;
+                    } else {
+                        let downwards_from_child = is_valid_downwards::<N, K, D>(child, tree);
+                        if !downwards_from_child {
+                            return false;
+                        }
+                    }
+                }
+                true
+            }
+            is_valid_downwards::<N, K, D>(offset::<D>(), &self.tree)
         }
     }
 }
