@@ -1,7 +1,7 @@
 use super::heap::Heap;
 use crate::{positions::none::HeapPositionsNone, PriorityQueue};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct DaryHeap<N, K, const D: usize>
 where
     N: Clone,
@@ -64,5 +64,9 @@ where
     }
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
         self.heap.push_then_pop(node, key)
+    }
+    #[cfg(test)]
+    fn is_valid(&self) -> bool {
+        self.heap.is_valid()
     }
 }

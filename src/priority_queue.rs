@@ -43,4 +43,8 @@ where
     /// The reason of merging the calls is that handling two instructions at once
     /// is more efficient for certain implementations, such as the binary heap,
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K);
+
+    /// Test method which returns whether or not the queue is valid.
+    #[cfg(test)]
+    fn is_valid(&self) -> bool;
 }

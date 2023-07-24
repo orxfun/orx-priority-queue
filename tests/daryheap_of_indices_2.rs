@@ -86,6 +86,11 @@ fn remove() {
 }
 
 #[test]
+fn mixed() {
+    test_mixed(new_heap());
+}
+
+#[test]
 fn decrease_key_or_push() {
     test_change_key_or_push(new_heap(), ChangeKeyMethod::Decrease);
 }

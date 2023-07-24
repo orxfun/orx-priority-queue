@@ -43,6 +43,8 @@ fn test_dary_for<const D: usize>() {
         .iter()
         .for_each(|change_key_method| test_change_key(new_heap(), *change_key_method));
     test_remove(new_heap());
+    test_mixed(new_heap());
+
     change_key
         .iter()
         .for_each(|change_key_method| test_change_key_or_push(new_heap(), *change_key_method));
