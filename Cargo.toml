@@ -5,7 +5,7 @@ edition = "2021"
 authors = ["orxfun"]
 description = "Priority queue traits and generalized d-ary heap implementations."
 license = "MIT"
-
+repository = "https://github.com/orxfun/orx-priority-queue/"
 
 [dependencies]
 
