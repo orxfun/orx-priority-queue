@@ -1,5 +1,5 @@
 # orx-priority-queue
-Priority queue traits; d-ary heap implementations having binary heap as a special case.
+Priority queue traits, d-ary heap implementations having binary heap as a special case.
 
 ## Traits
 
