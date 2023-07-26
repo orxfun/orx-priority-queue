@@ -8,7 +8,6 @@ This crate defines two priority queue traits for (node, key) pairs with the foll
 * `PriorityQueue<N, K>`
     * `fn len(&self) -> usize;`
     * `fn is_empty(&self) -> bool;`
-    * `fn is_empty(&self) -> bool;`
     * `fn peek(&self) -> Option<&(N, K)>;`
     * `fn clear(&mut self);`
     * `fn pop(&mut self) -> Option<(N, K)>;`
