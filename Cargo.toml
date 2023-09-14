@@ -1,13 +1,13 @@
 [package]
 name = "orx-priority-queue"
-version = "0.1.7"
+version = "0.2.0"
 edition = "2021"
 authors = ["orxfun <orx.ugur.arikan@gmail.com>"]
 description = "Priority queue traits, d-ary heap implementations having binary heap as a special case."
 license = "MIT"
 repository = "https://github.com/orxfun/orx-priority-queue/"
 keywords = ["priority", "queue", "heap", "dary", "binary"]
-categories = ["Data structures"]
+categories = ["data-structures"]
 
 [dependencies]
 
