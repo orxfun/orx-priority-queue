@@ -26,6 +26,9 @@ where
         unsafe { add_offset_to_tree::<N, K, D>(&mut tree) };
         Self { tree, positions }
     }
+    pub(crate) fn positions(&self) -> &P {
+        &self.positions
+    }
     fn heapify_up(&mut self, starting_position: usize) {
         if starting_position == offset::<D>() {
             return;

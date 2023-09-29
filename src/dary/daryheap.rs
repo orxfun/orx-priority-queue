@@ -1,16 +1,27 @@
 use super::heap::Heap;
 use crate::{positions::none::HeapPositionsNone, PriorityQueue};
 
-/// A d-ary heap which implements `PriorityQueue` and `PriorityQueueDecKey`.
+/// Type alias for `DaryHeap<N, K, 2>`; see [`DaryHeap`] for details.
+pub type BinaryHeap<N, K> = DaryHeap<N, K, 2>;
+/// Type alias for `DaryHeap<N, K, 3>`; see [`DaryHeap`] for details.
+pub type TernaryHeap<N, K> = DaryHeap<N, K, 3>;
+/// Type alias for `DaryHeap<N, K, 4>`; see [`DaryHeap`] for details.
+pub type QuarternaryHeap<N, K> = DaryHeap<N, K, 4>;
+
+/// A d-ary heap which implements `PriorityQueue`, but not `PriorityQueueDecKey`.
+///
+/// *Its interface is similar to `std::collections:BinaryHeap; however, provides a generalization by allowing different d values.
+/// `DaryHeapMap` and DaryHeapOfIndices` on the other hand, provides the additonal functionality of `PriorityQueueDecKey`
+/// which are crucial for providing better space complexity in algorithms such as the Dijkstra's shortest path algorithm.*
 ///
 /// # Examples
 ///
-/// ## Heap as `PriorityQueue`
+/// ## Heap as a `PriorityQueue`
 ///
 /// Usage of d-ary heap as a basic priority queue.
 ///
 /// ```
-/// use orx_priority_queue::prelude::*;
+/// use orx_priority_queue::*;
 ///
 /// fn test_priority_queue<P>(mut pq: P)
 /// where
@@ -33,61 +44,19 @@ use crate::{positions::none::HeapPositionsNone, PriorityQueue};
 ///     assert!(pq.is_empty());
 /// }
 ///
-/// // basic quaternary heap without any means to located existing nodes
+/// // basic d-heap without any means to located existing nodes
 /// test_priority_queue(DaryHeap::<_, _, 4>::default());
-/// test_priority_queue(DaryHeap::<_, _, 4>::with_capacity(16));
-///
-/// // octonary heap using map to locate existing nodes (although decrease-key is not used here)
-/// test_priority_queue(DaryHeapWithMap::<_, _, 8>::default());
-/// test_priority_queue(DaryHeapWithMap::<_, _, 8>::with_capacity(64));
-///
-/// // binary heap using id's to locate existing nodes (although decrease-key is not used here)
-/// test_priority_queue(DaryHeapOfIndices::<_, _, 2>::with_upper_limit(32));
-/// ```
-///
-/// ## Heap as `PriorityQueueDecKey`
-///
-/// Usage of a d-ary heap as a priority queue with decrease key operation and its variants.
-///
-/// ```
-/// use orx_priority_queue::prelude::*;
-///
-/// fn test_priority_queue_deckey<P>(mut pq: P)
-/// where
-///     P: PriorityQueueDecKey<usize, f64>
-/// {
-///     pq.clear();
-///     
-///     pq.push(0, 42.0);
-///     assert_eq!(Some(&(0, 42.0)), pq.peek());
-///
-///     pq.push(1, 17.0);
-///     assert_eq!(Some(&(1, 17.0)), pq.peek());
-///
-///     pq.decrease_key(&0, &7.0);
-///     assert_eq!(Some(&(0, 7.0)), pq.peek());
-///
-///     let is_key_decreased = pq.try_decrease_key(&1, &20.0);
-///     assert!(!is_key_decreased);
-///
-///     let popped = pq.pop();
-///     assert_eq!(Some((0, 7.0)), popped);
-///
-///     let popped = pq.pop();
-///     assert_eq!(Some((1, 17.0)), popped);
-///
-///     assert!(pq.is_empty());
-/// }
-///
-/// // octonary heap using map to locate existing nodes
-/// test_priority_queue_deckey(DaryHeapWithMap::<_, _, 8>::default());
-/// test_priority_queue_deckey(DaryHeapWithMap::<_, _, 8>::with_capacity(64));
-///
-/// // binary heap using id's to locate existing nodes
-/// test_priority_queue_deckey(DaryHeapOfIndices::<_, _, 2>::with_upper_limit(32));
+/// test_priority_queue(DaryHeap::<_, _, 3>::with_capacity(16));
+/// // using type aliases to simplify signatures
+/// test_priority_queue(BinaryHeap::default());
+/// test_priority_queue(BinaryHeap::with_capacity(16));
+/// test_priority_queue(TernaryHeap::default());
+/// test_priority_queue(TernaryHeap::with_capacity(16));
+/// test_priority_queue(QuarternaryHeap::default());
+/// test_priority_queue(QuarternaryHeap::with_capacity(16));
 /// ```
 #[derive(Clone, Debug)]
-pub struct DaryHeap<N, K, const D: usize>
+pub struct DaryHeap<N, K, const D: usize = 2>
 where
     N: Clone,
     K: PartialOrd + Clone,
@@ -112,6 +81,17 @@ where
     K: PartialOrd + Clone,
 {
     /// Creates a new d-ary heap with the given initial `capacity` on the number of nodes to simultaneously exist on the heap.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use orx_priority_queue::*;
+    ///
+    /// // create a queue with an expected space complexity of 4
+    /// let mut queue = DaryHeap::<_, _, 4>::with_capacity(4);
+    /// queue.push('a', 4);
+    /// assert_eq!(Some('a'), queue.pop_node());
+    /// ```
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
             heap: Heap::new(Some(capacity), HeapPositionsNone),

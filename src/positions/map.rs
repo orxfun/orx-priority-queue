@@ -50,8 +50,8 @@ where
         debug_assert!(self.contains(node), "removing an absent node");
         self.map.remove(node);
     }
-    fn update_position_of(&mut self, node: &N, positions: usize) {
-        *self.map.get_mut(node).unwrap() = positions;
+    fn update_position_of(&mut self, node: &N, position: usize) {
+        *self.map.get_mut(node).expect("node must exist") = position;
     }
 
     fn is_valid<K>(&self, offset: usize, tree: &[(N, K)]) -> bool {

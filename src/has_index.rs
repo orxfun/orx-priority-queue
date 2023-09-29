@@ -11,6 +11,7 @@
 /// This may be useful in simplifying the algorithms and improving performance when
 /// the elements entering the queue are sampled from a closed and known set, as the cities above.
 pub trait HasIndex: Clone {
+    /// Returns the index of the element.
     fn index(&self) -> usize;
 }
 
