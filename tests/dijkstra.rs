@@ -31,17 +31,11 @@ fn dijkstra() {
                 return Some(cost);
             }
 
-            // Important as we may have already found a better way
-            if cost > dist[position] {
-                continue;
-            }
-
             // For each node we can reach, see if we can find a way with
             // a lower cost going through this node
             for edge in &adj_list[position] {
                 let next_cost = cost + edge.cost;
-                let better_tail = heap.try_decrease_key_or_push(&edge.node, &next_cost);
-                if better_tail {
+                if heap.try_decrease_key_or_push(&edge.node, &next_cost) {
                     dist[edge.node] = next_cost; // we found a shorter path
                 }
             }
