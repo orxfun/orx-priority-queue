@@ -75,7 +75,7 @@ where
     /// making them suitable for different cases/algorithms:
     /// `decrease_key`, `update_key`, `try_decrease_key`, `decrease_key_or_push`, `update_key_or_push` and `try_decrease_key_or_push`.
     fn try_decrease_key(&mut self, node: &N, new_key: &K) -> bool {
-        let old_key = self.key_of(node).unwrap();
+        let old_key = self.key_of(node).expect("node must exist on the heap.");
         if new_key < &old_key {
             self.decrease_key(node, new_key);
             true

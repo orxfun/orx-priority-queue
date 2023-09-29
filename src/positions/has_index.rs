@@ -23,6 +23,9 @@ where
             ph: PhantomData,
         }
     }
+    pub(crate) fn upper_limit(&self) -> usize {
+        self.positions.len()
+    }
 }
 impl<N> HeapPositions<N> for HeapPositionsHasIndex<N>
 where
