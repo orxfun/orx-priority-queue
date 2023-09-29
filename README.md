@@ -19,7 +19,7 @@ Consider Dijkstra's shortest-path algorithm for instance. Space complexity of th
 
 On the other hand, using a `PriorityQueueDecKey`, space complexity of the algorithm will be kept as *O(n)*: each node will enter the queue at most once; consequent evaluations of its label will be handled by decrease key operation.
 
-Furthermore, the additional functionalities simplify the algorithm's code pushing some of the complexity to the data structure. This becomes clear when the following `shortest_path` implementation is compared to the corresponding `std::collections::BinaryHeap` example. Note that it is almost a drop-dead substitution while providing a better space complexity, generic dary-heap options and a cleaner algorithm implementation.
+Furthermore, the additional functionalities simplify the algorithm implementation pushing some of the complexity to the data structure. This becomes clear when the following `shortest_path` implementation is compared to the corresponding `std::collections::BinaryHeap` example. Note that it is almost a drop-dead substitution while providing a better space complexity, generic dary-heap options and a cleaner algorithm implementation.
 
 ```rust
 use orx_priority_queue::*;
@@ -53,17 +53,11 @@ fn shortest_path(adj_list: &Vec<Vec<Edge>>, start: usize, goal: usize) -> Option
             return Some(cost);
         }
 
-        // Important as we may have already found a better way
-        if cost > dist[position] {
-            continue;
-        }
-
         // For each node we can reach, see if we can find a way with
         // a lower cost going through this node
         for edge in &adj_list[position] {
             let next_cost = cost + edge.cost;
-            let better_tail = heap.try_decrease_key_or_push(&edge.node, &next_cost);
-            if better_tail {
+            if heap.try_decrease_key_or_push(&edge.node, &next_cost) {
                 dist[edge.node] = next_cost; // we found a shorter path
             }
         }
