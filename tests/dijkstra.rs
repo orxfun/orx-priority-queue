@@ -14,14 +14,10 @@ fn dijkstra() {
     // to each node. This implementation isn't memory-efficient as it may leave duplicate
     // nodes in the queue. It also uses `usize::MAX` as a sentinel value,
     // for a simpler implementation.
-    fn shortest_path(adj_list: &Vec<Vec<Edge>>, start: usize, goal: usize) -> Option<usize> {
-        // dist[node] = current shortest distance from `start` to `node`
-        let mut dist: Vec<_> = (0..adj_list.len()).map(|_| usize::MAX).collect();
-
+    fn shortest_path(adj_list: &[Vec<Edge>], start: usize, goal: usize) -> Option<usize> {
         let mut heap = BinaryHeapWithMap::default();
 
         // We're at `start`, with a zero cost
-        dist[start] = 0;
         heap.push(start, 0);
 
         // Examine the frontier with lower cost nodes first (min-heap)
@@ -34,10 +30,7 @@ fn dijkstra() {
             // For each node we can reach, see if we can find a way with
             // a lower cost going through this node
             for edge in &adj_list[position] {
-                let next_cost = cost + edge.cost;
-                if heap.try_decrease_key_or_push(&edge.node, &next_cost) {
-                    dist[edge.node] = next_cost; // we found a shorter path
-                }
+                heap.try_decrease_key_or_push(&edge.node, &(cost + edge.cost));
             }
         }
 
