@@ -19,7 +19,78 @@ Consider Dijkstra's shortest-path algorithm for instance. Space complexity of th
 
 On the other hand, using a `PriorityQueueDecKey`, space complexity of the algorithm will be kept as *O(n)*: each node will enter the queue at most once; consequent evaluations of its label will be handled by decrease key operation.
 
-Furthermore, the additional functionalities simplify the algorithm implementation pushing some of the complexity to the data structure. This becomes clear when the following `shortest_path` implementation is compared to the corresponding `std::collections::BinaryHeap` example. Note that it is almost a drop-dead substitution while providing a better space complexity, generic dary-heap options and a cleaner algorithm implementation.
+Furthermore, the additional functionalities simplify the algorithm implementation pushing some of the complexity to the data structure. This becomes clear when the following `shortest_path` implementation is compared to the corresponding `std::collections::BinaryHeap` example. Note that it is almost a direct substitution while providing a better space complexity, generic dary-heap options and a cleaner algorithm implementation.
+
+
+#### `PriorityQueue` version of Dijkstra's shortest path algorithm
+
+Below is the main iteration of Dijkstra's shortest path algorithm with a basic priority queue without a decrease key operation; taken and slightly adjusted from `std::collections::BinaryHeap`.
+
+```rust ignore
+// Examine the frontier with lower cost nodes first (min-heap)
+while let Some((position, cost)) = heap.pop() {
+    // Alternatively we could have continued to find all shortest paths
+    if position == goal { return Some(cost); }
+
+    // Important as we may have already found a better way
+    if cost > dist[position] { continue; }
+
+    // For each node we can reach, see if we can find a way with
+    // a lower cost going through this node
+    for edge in &adj_list[position] {
+        let next = State { cost: cost + edge.cost, position: edge.node };
+
+        // If so, add it to the frontier and continue
+        if next.cost < dist[next.position] {
+            heap.push(next);
+            // Relaxation, we have now found a better way
+            dist[next.position] = next.cost;
+        }
+    }
+}
+```
+
+In addition to the heap, we need to keep the `dist` array. This has two main purposes:
+* to avoid visiting the same node multiple times by the check `cost > dist[position]`;
+* so that we do not push non-improving labels to the queue to reduce heap pushes by `next.cost < dist[next.position]`; however, it still requires *O(n^2)* space complexity.
+
+Notice that none of these would be necessary if each node entered the heap at most once and its key was updated throughout the search whenever a shorter path is found.
+
+#### `PriorityQueueDecKey` version of Dijkstra's shortest path algorithm
+
+See below the `PriorityQueueDecKey` version which reduces space complexity to *O(n)*.
+
+The heap is now internally paired up with a positions array (`DaryHeapOfIndices`) or hash map (`DaryHeapWithMap`) with space complexity of *O(n)*. This is already compensated by not requiring the `dist` vector.
+
+Furthermore, it allows to simplify the algorithm implementation by pushing the main complexity to the data structure; the algorithm now simply expresses the traversal and the update.
+
+```rust ignore
+// Examine the frontier with lower cost nodes first (min-heap)
+while let Some((position, cost)) = heap.pop() {
+    // Alternatively we could have continued to find all shortest paths
+    if position == goal {
+        return Some(cost);
+    }
+
+    // For each node we can reach, see if we can find a way with
+    // a lower cost going through this node
+    for edge in &adj_list[position] {
+        heap.try_decrease_key_or_push(&edge.node, &(cost + edge.cost));
+    }
+}
+```
+
+Note that `try_decrease_key_or_push` performs the following:
+
+* if the node already exists in the queue:
+    * when the new `key` is strictly less than the `node`'s current key; it decreases the key of the node to the given new `key`, and  returns true (a new shorter path is found, an indicator to udpate predecessor if shortest path is a required output in addition to shortest distance);
+    * otherwise, does not change the queue and returns false;
+* otherwise, pushes the `node` with the given `key` to the queue, and returns false.
+
+This is exactly what we need for Dijsktra's shortest path algorithm, and many node labelling algorithms. See [`PriorityQueueDecKey`] for other metods of the trait.
+
+See below, or [tests/dijkstra.rs](https://github.com/orxfun/orx-priority-queue/blob/main/tests/dijkstra.rs), for the complete implementation of the Dijkstra's shortest path algorithm with a `PriorityQueueDecKey`, adjusted from the standard BinaryHeap example.
+
 
 ```rust
 use orx_priority_queue::*;
@@ -37,13 +108,9 @@ struct Edge {
 // nodes in the queue. It also uses `usize::MAX` as a sentinel value,
 // for a simpler implementation.
 fn shortest_path(adj_list: &Vec<Vec<Edge>>, start: usize, goal: usize) -> Option<usize> {
-    // dist[node] = current shortest distance from `start` to `node`
-    let mut dist: Vec<_> = (0..adj_list.len()).map(|_| usize::MAX).collect();
-
     let mut heap = BinaryHeapWithMap::default();
 
     // We're at `start`, with a zero cost
-    dist[start] = 0;
     heap.push(start, 0);
 
     // Examine the frontier with lower cost nodes first (min-heap)
@@ -56,10 +123,7 @@ fn shortest_path(adj_list: &Vec<Vec<Edge>>, start: usize, goal: usize) -> Option
         // For each node we can reach, see if we can find a way with
         // a lower cost going through this node
         for edge in &adj_list[position] {
-            let next_cost = cost + edge.cost;
-            if heap.try_decrease_key_or_push(&edge.node, &next_cost) {
-                dist[edge.node] = next_cost; // we found a shorter path
-            }
+            heap.try_decrease_key_or_push(&edge.node, &(cost + edge.cost));
         }
     }
 
