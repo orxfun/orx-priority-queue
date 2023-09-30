@@ -260,7 +260,7 @@
 //!     }
 //! }
 //!
-//! // d of the d-ary heap
+//! // d-ary heap generic over const d
 //! const D: usize = 4;
 //!
 //! test_priority_queue(DaryHeap::<usize, f64, D>::default());
@@ -269,6 +269,26 @@
 //!
 //! test_priority_queue_deckey(DaryHeapWithMap::<usize, f64, D>::default());
 //! test_priority_queue_deckey(DaryHeapOfIndices::<usize, f64, D>::with_upper_limit(100));
+//!
+//! // or type aliases for common heaps to simplify signature
+//! // Binary, Ternary or Quarternary to fix D of Dary
+//! test_priority_queue(BinaryHeap::default());
+//! test_priority_queue(BinaryHeapWithMap::default());
+//! test_priority_queue(BinaryHeapOfIndices::with_upper_limit(100));
+//! test_priority_queue_deckey(BinaryHeapWithMap::default());
+//! test_priority_queue_deckey(BinaryHeapOfIndices::with_upper_limit(100));
+//!
+//! test_priority_queue(TernaryHeap::default());
+//! test_priority_queue(TernaryHeapWithMap::default());
+//! test_priority_queue(TernaryHeapOfIndices::with_upper_limit(100));
+//! test_priority_queue_deckey(TernaryHeapWithMap::default());
+//! test_priority_queue_deckey(TernaryHeapOfIndices::with_upper_limit(100));
+//!
+//! test_priority_queue(QuarternaryHeap::default());
+//! test_priority_queue(QuarternaryHeapWithMap::default());
+//! test_priority_queue(QuarternaryHeapOfIndices::with_upper_limit(100));
+//! test_priority_queue_deckey(QuarternaryHeapWithMap::default());
+//! test_priority_queue_deckey(QuarternaryHeapOfIndices::with_upper_limit(100));
 //! ```
 //!
 //! ## License
