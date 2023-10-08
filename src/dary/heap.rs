@@ -3,6 +3,7 @@ use crate::{
     positions::heap_positions::{HeapPositions, HeapPositionsDecKey},
     PriorityQueue, PriorityQueueDecKey,
 };
+use alloc::vec::Vec;
 
 #[derive(Debug, Clone)]
 pub(crate) struct Heap<N, K, P, const D: usize>
