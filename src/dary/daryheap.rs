@@ -97,6 +97,11 @@ where
             heap: Heap::new(Some(capacity), HeapPositionsNone),
         }
     }
+    /// Returns the 'd' of the d-ary heap.
+    /// In other words, it represents the maximum number of children that each node on the heap can have.
+    pub const fn d() -> usize {
+        D
+    }
 }
 
 impl<N, K, const D: usize> PriorityQueue<N, K> for DaryHeap<N, K, D>
@@ -104,8 +109,13 @@ where
     N: Clone,
     K: PartialOrd + Clone,
 {
+    #[inline(always)]
     fn len(&self) -> usize {
         self.heap.len()
+    }
+    #[inline(always)]
+    fn capacity(&self) -> usize {
+        self.heap.capacity()
     }
     fn as_slice(&self) -> &[(N, K)] {
         self.heap.as_slice()
@@ -116,18 +126,23 @@ where
     fn clear(&mut self) {
         self.heap.clear()
     }
+    #[inline(always)]
     fn pop(&mut self) -> Option<(N, K)> {
         self.heap.pop()
     }
+    #[inline(always)]
     fn pop_node(&mut self) -> Option<N> {
         self.heap.pop_node()
     }
+    #[inline(always)]
     fn pop_key(&mut self) -> Option<K> {
         self.heap.pop_key()
     }
+    #[inline(always)]
     fn push(&mut self, node: N, key: K) {
         self.heap.push(node, key)
     }
+    #[inline(always)]
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
         self.heap.push_then_pop(node, key)
     }

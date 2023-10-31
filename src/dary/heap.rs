@@ -1,11 +1,13 @@
-use super::daryheap_const_helpers::{add_offset_to_tree, child_of, init_tree, offset, parent_of};
+use super::daryheap_const_helpers::{
+    add_offset_to_tree, init_tree, left_child_of, offset, parent_of,
+};
 use crate::{
     positions::heap_positions::{HeapPositions, HeapPositionsDecKey},
-    PriorityQueue, PriorityQueueDecKey,
+    PriorityQueue, PriorityQueueDecKey, ResUpdateKey,
 };
 use alloc::vec::Vec;
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct Heap<N, K, P, const D: usize>
 where
     N: Clone,
@@ -64,7 +66,7 @@ where
         let tree_len = self.tree.len();
 
         let mut parent = starting_position;
-        let first_child = child_of::<D>(starting_position);
+        let first_child = left_child_of::<D>(starting_position);
         if first_child >= tree_len {
             return;
         }
@@ -95,7 +97,7 @@ where
             self.tree[parent] = self.tree[best_child].clone();
 
             parent = best_child;
-            let first_child = child_of::<D>(parent);
+            let first_child = left_child_of::<D>(parent);
             if first_child >= tree_len {
                 break;
             }
@@ -157,6 +159,9 @@ where
     }
     fn is_empty(&self) -> bool {
         self.tree.len() == offset::<D>()
+    }
+    fn capacity(&self) -> usize {
+        self.tree.capacity() - offset::<D>()
     }
 
     fn peek(&self) -> Option<&(N, K)> {
@@ -240,7 +245,7 @@ where
                 K: PartialOrd,
             {
                 for i in 0..D {
-                    let child = child_of::<D>(parent) + i;
+                    let child = left_child_of::<D>(parent) + i;
                     if child >= tree.len() {
                         return true;
                     } else if tree[child].1 < tree[parent].1 {
@@ -273,31 +278,31 @@ where
             .position_of(node)
             .map(|i| self.tree[i].1.clone())
     }
-    fn decrease_key(&mut self, node: &N, decreased_key: &K) {
+    fn decrease_key(&mut self, node: &N, decreased_key: K) {
         let position = self
             .positions
             .position_of(node)
             .expect("cannot decrease key of a node that is not on the queue");
         assert!(
-            decreased_key <= &self.tree[position].1,
+            decreased_key <= self.tree[position].1,
             "decrease_key is called with a greater key"
         );
         self.tree[position].1 = decreased_key.clone();
         self.heapify_up(position);
     }
-    fn update_key(&mut self, node: &N, new_key: &K) -> bool {
+    fn update_key(&mut self, node: &N, new_key: K) -> ResUpdateKey {
         let position = self
             .positions
             .position_of(node)
             .expect("cannot update key of a node that is not on the queue");
-        let up = new_key < &self.tree[position].1;
+        let up = new_key < self.tree[position].1;
         self.tree[position].1 = new_key.clone();
         if up {
             self.heapify_up(position);
-            true
+            ResUpdateKey::Decreased
         } else {
             self.heapify_down(position);
-            false
+            ResUpdateKey::Increased
         }
     }
 

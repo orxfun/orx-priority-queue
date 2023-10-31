@@ -1,206 +1,57 @@
 # orx-priority-queue
-Priority queue traits, d-ary heap implementations having binary heap as a special case.
+
+This crate aims to address the following:
+
+1. To provide priority queue traits for two goals:
+    * to separate simple and decrease key queues, and
+    * to enable developing functions or algorithms which are generic over the actual queue type.
+2. To provide d-ary heap implementations, which is generic over `d`:
+    * the implementation makes use of the const-generics which conveniently allows to take advantage of bit operations for the cases where `d` is a power of two, while having a general implementation for others.
+
 
 ## Traits
 
 This crate defines two priority queue traits for (node, key) pairs with the following features:
 
-* [`PriorityQueue<N, K>`]: providing basic priority queue functionalities.
-* [`PriorityQueueDecKey<N, K>`]: adds super powers which is achieved by being able to locate positions of nodes that already exists on the heap.
+* `PriorityQueue<N, K>`: providing basic priority queue functionalities.
+* `PriorityQueueDecKey<N, K>`: extends the `PriorityQueue<N, K>` by allowing methods to mutate keys of existing items.
 
-Separating more advanced `PriorityQueueDecKey` from the basic queue is due to the fact that additional functionalities are often made available through usage of additional memory.
+The differences can be summarized as follows:
 
-### Benefits of `PriorityQueueDecKey`
+* A decrease key queue is also a simple priority queue; with additonal operations such as `decrease_key` and `update_key`, etc.
+* A simple queue has a lower initial memory requirement; while the decrease key queues need an additional internal data structure to keep track of positions.
+* On the other hand, a decrease key queue provides a better space complexity than a simple queue in many algorithms.
+    * For instance, a Dijkstra's shortest path algorithm implementation with a simple queue has a space complexity of O(n^2) due to the fact that every node can enter the node n times, where n is the number of nodes.
+    * However, the same algorithm using a decrease key queue requires a space complexity of O(n) since each node will enter the queue at most once, and its key will be updated if the same node is observed more than once.
 
-Decrease-key, and related operations, are critical for certain algorithms where the key of a particular node is evaluated multiple times. Without the ability to update keys of nodes on the heap, space complexity of correspoinding algorithms
-increases exponentially.
+## Choice of the Queue
 
-Consider Dijkstra's shortest-path algorithm for instance. Space complexity of the algorithm would be *O(n^2)* with a `PriorityQueue` where *n* is the number of nodes on the graph. This is due to the fact that label of each node might be evaluated *n-1* times and consequently each node can be pushed to the queue *n-1* times. As also noted in `std::collections::BinaryHeap` documentation, [*this implementation isn't memory-efficient as it may leave duplicate nodes in the queue.*](https://doc.rust-lang.org/stable/std/collections/binary_heap/index.html)
+This crate provides three kinds of queue implementations. You may find below their differences and the situations each could be a better fit.
 
-On the other hand, using a `PriorityQueueDecKey`, space complexity of the algorithm will be kept as *O(n)*: each node will enter the queue at most once; consequent evaluations of its label will be handled by decrease key operation.
+* `OrxDaryHeap` is a simple `PriorityQueue` implemented as a heap.
+    * Benefits from its simplicity.
+    * Could be considered as the default queue implementation where the memory efficiency is not very critical.
+* `OrxDaryHeapOfIndices` is a `PriorityQueueDecKey` which aims to be performant while requiring the items that can enter the queue to implement `HasIndex` trait, which simply has the single method `fn index(&self) -> usize`. The implementation is a heap parallel to a mapping of items to positions on the heap.
+    * Particularly useful in performance critical algorithms which additionally requires memory efficiency.
+    * Requires that the size of the closed set of candidates that can enter the queue is known. This is not a strong limitation in many algorithms. For instance, for most network traversal algorithms, this equals to the number of nodes in the graph.
+* `OrxDaryHeapWithMap` is also a `PriorityQueueDecKey` which aims to be flexible requiring the items to implement `Hash + Eq`. It has a similar implementation with the prior except that it utilizes a map to keep track of item positions on the heap.
+    * This can be considered as the alternative to `OrxDaryHeapOfIndices` in memory critical situations, where it is not possible to satisfy the requirement on knowing the size of the closed set of candidates.
 
-Furthermore, the additional functionalities simplify the algorithm implementation pushing some of the complexity to the data structure. This becomes clear when the following `shortest_path` implementation is compared to the corresponding `std::collections::BinaryHeap` example. Note that it is almost a direct substitution while providing a better space complexity, generic dary-heap options and a cleaner algorithm implementation.
+Note that each of the above kinds is generic over `d`, leading to a large number of possible queue choices. The traits come handy here allowing to write algorithms generic over the queue, which then can be benchmarked with different concrete types to find the most performant implementation for the problem. In the next section, we summarize such an experiment.
 
+### Experiments on Shortest Path Algorithm
 
-#### `PriorityQueue` version of Dijkstra's shortest path algorithm
+Using the traits, we can write algorithms which are generic over the queues. This allows to conveniently benchmark over the relevant data to find the best fitting queue implementation. You may see such an example exercise in the repository [https://github.com/orxfun/orx-bench-shortest-path](https://github.com/orxfun/orx-bench-shortest-path) which allows to compare different shortest path algorithm implementations. From our current experiments using random and real life networks, the following table can be consulted.
 
-Below is the main iteration of Dijkstra's shortest path algorithm with a basic priority queue without a decrease key operation; taken and slightly adjusted from `std::collections::BinaryHeap`.
-
-```rust ignore
-// Examine the frontier with lower cost nodes first (min-heap)
-while let Some((position, cost)) = heap.pop() {
-    // Alternatively we could have continued to find all shortest paths
-    if position == goal { return Some(cost); }
-
-    // Important as we may have already found a better way
-    if cost > dist[position] { continue; }
-
-    // For each node we can reach, see if we can find a way with
-    // a lower cost going through this node
-    for edge in &adj_list[position] {
-        let next = State { cost: cost + edge.cost, position: edge.node };
-
-        // If so, add it to the frontier and continue
-        if next.cost < dist[next.position] {
-            heap.push(next);
-            // Relaxation, we have now found a better way
-            dist[next.position] = next.cost;
-        }
-    }
-}
-```
-
-In addition to the heap, we need to keep the `dist` array. This has two main purposes:
-* to avoid visiting the same node multiple times by the check `cost > dist[position]`;
-* so that we do not push non-improving labels to the queue to reduce heap pushes by `next.cost < dist[next.position]`; however, it still requires *O(n^2)* space complexity.
-
-Notice that none of these would be necessary if each node entered the heap at most once and its key was updated throughout the search whenever a shorter path is found.
-
-#### `PriorityQueueDecKey` version of Dijkstra's shortest path algorithm
-
-See below the `PriorityQueueDecKey` version which reduces space complexity to *O(n)*.
-
-The heap is now internally paired up with a positions array (`DaryHeapOfIndices`) or hash map (`DaryHeapWithMap`) with space complexity of *O(n)*. This is already compensated by not requiring the `dist` vector.
-
-Furthermore, it allows to simplify the algorithm implementation by pushing the main complexity to the data structure; the algorithm now simply expresses the traversal and the update.
-
-```rust ignore
-// Examine the frontier with lower cost nodes first (min-heap)
-while let Some((position, cost)) = heap.pop() {
-    // Alternatively we could have continued to find all shortest paths
-    if position == goal {
-        return Some(cost);
-    }
-
-    // For each node we can reach, see if we can find a way with
-    // a lower cost going through this node
-    for edge in &adj_list[position] {
-        heap.try_decrease_key_or_push(&edge.node, &(cost + edge.cost));
-    }
-}
-```
-
-Note that `try_decrease_key_or_push` performs the following:
-
-* if the node already exists in the queue:
-    * when the new `key` is strictly less than the `node`'s current key; it decreases the key of the node to the given new `key`, and  returns true (a new shorter path is found, an indicator to udpate predecessor if shortest path is a required output in addition to shortest distance);
-    * otherwise, does not change the queue and returns false;
-* otherwise, pushes the `node` with the given `key` to the queue, and returns false.
-
-This is exactly what we need for Dijsktra's shortest path algorithm, and many node labelling algorithms. See [`PriorityQueueDecKey`] for other metods of the trait.
-
-See below, or [tests/dijkstra.rs](https://github.com/orxfun/orx-priority-queue/blob/main/tests/dijkstra.rs), for the complete implementation of the Dijkstra's shortest path algorithm with a `PriorityQueueDecKey`, adjusted from the standard BinaryHeap example.
-
-
-```rust
-use orx_priority_queue::*;
-
-// Each node is represented as a `usize`, for a shorter implementation.
-struct Edge {
-    node: usize,
-    cost: usize,
-}
-
-// Dijkstra's shortest path algorithm.
-
-// Start at `start` and use `dist` to track the current shortest distance
-// to each node. This implementation isn't memory-efficient as it may leave duplicate
-// nodes in the queue. It also uses `usize::MAX` as a sentinel value,
-// for a simpler implementation.
-fn shortest_path(adj_list: &Vec<Vec<Edge>>, start: usize, goal: usize) -> Option<usize> {
-    let mut heap = BinaryHeapWithMap::default();
-
-    // We're at `start`, with a zero cost
-    heap.push(start, 0);
-
-    // Examine the frontier with lower cost nodes first (min-heap)
-    while let Some((position, cost)) = heap.pop() {
-        // Alternatively we could have continued to find all shortest paths
-        if position == goal {
-            return Some(cost);
-        }
-
-        // For each node we can reach, see if we can find a way with
-        // a lower cost going through this node
-        for edge in &adj_list[position] {
-            heap.try_decrease_key_or_push(&edge.node, &(cost + edge.cost));
-        }
-    }
-
-    // Goal not reachable
-    None
-}
-
-// This is the directed graph we're going to use.
-// The node numbers correspond to the different states,
-// and the edge weights symbolize the cost of moving
-// from one node to another.
-// Note that the edges are one-way.
-//
-//                  7
-//          +-----------------+
-//          |                 |
-//          v   1        2    |  2
-//          0 -----> 1 -----> 3 ---> 4
-//          |        ^        ^      ^
-//          |        | 1      |      |
-//          |        |        | 3    | 1
-//          +------> 2 -------+      |
-//           10      |               |
-//                   +---------------+
-//
-// The graph is represented as an adjacency list where each index,
-// corresponding to a node value, has a list of outgoing edges.
-// Chosen for its efficiency.
-let graph = vec![
-    // Node 0
-    vec![Edge { node: 2, cost: 10 }, Edge { node: 1, cost: 1 }],
-    // Node 1
-    vec![Edge { node: 3, cost: 2 }],
-    // Node 2
-    vec![
-        Edge { node: 1, cost: 1 },
-        Edge { node: 3, cost: 3 },
-        Edge { node: 4, cost: 1 },
-    ],
-    // Node 3
-    vec![Edge { node: 0, cost: 7 }, Edge { node: 4, cost: 2 }],
-    // Node 4
-    vec![],
-];
-
-assert_eq!(shortest_path(&graph, 0, 1), Some(1));
-assert_eq!(shortest_path(&graph, 0, 3), Some(3));
-assert_eq!(shortest_path(&graph, 3, 0), Some(7));
-assert_eq!(shortest_path(&graph, 0, 4), Some(5));
-assert_eq!(shortest_path(&graph, 4, 0), None);
-```
-
-## Implementations
-
-### d-ary heap
-
-The core [d-ary heap](https://en.wikipedia.org/wiki/D-ary_heap) is implemented thanks to const generics.
-Three structs are created from this core struct:
-
-* [`DaryHeap<N, K, const D: usize>`] which implements `PriorityQueue<N, K>` to be preferred when the additional 
-features are not required.
-* [`DaryHeapWithMap<N, K, const D: usize>`] where `N: Hash + Equal` implements `PriorityQueueDecKey<N, K>`.
-It is a combination of the d-ary heap and a hash-map to track positions of nodes.
-This might be considered as the default way to extend the heap to enable additional funcitonalities without requiring a linear search.
-* [`DaryHeapOfIndices<N, K, const D: usize>`] where `N: HasIndex` implements `PriorityQueueDecKey<N, K>`.
-This variant is and alternative to the hash-map implementation and is particularly useful in algorithms where nodes to be enqueued are sampled from a closed set with known elements and the size of the queue is likely to get close to total number of candidates.
-
-### Special traversal for d=2: binary-heap
-
-const generics further allows to use special arithmetics for the special case where d=2; i.e.,
-when d-ary heap is the binary heap.
-In particular, one addition/subtraction is avoided during the traversal through the tree.
-
-However, overall performance of the queues depends on the use case,
-ratio of push an decrease-key operations, etc.
-Benchmarks will follow.
-
+|                    |     |     | Queue Trait             | Queue Type               |
+|--------------------|-----|-----|-------------------------|--------------------------|
+| Memory Critical?   | yes |     |  `PriorityQueueDecKey`  |                          |
+| - Is Graph Sparse? |     | yes |                         |  `OrxDaryHeapOfIndices`  |
+|                    |     | no  |                         |  `OrxDaryHeapOfIndices`  |
+|.                   |     |     |                         |                          |
+| Memory Critical?   | no  |     |  `PriorityQueue`        |                          |
+| - Is Graph Sparse? |     | yes |                         |  `OrxDaryHeap`           |
+|                    |     | no  |                         |  `OrxDaryHeap` or `std::collections::BinaryHeap` |
 
 ## Example
 

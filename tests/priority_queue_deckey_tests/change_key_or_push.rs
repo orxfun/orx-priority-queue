@@ -1,6 +1,6 @@
 use super::ChangeKeyMethod;
 use itertools::Itertools;
-use orx_priority_queue::PriorityQueueDecKey;
+use orx_priority_queue::{PriorityQueueDecKey, ResTryDecreaseKeyOrPush, ResUpdateKeyOrPush};
 use rand::prelude::*;
 use std::cmp::Ordering;
 
@@ -44,22 +44,22 @@ where
 
         match change_key {
             ChangeKeyMethod::Decrease => {
-                pq.decrease_key_or_push(&node, &new_key);
+                pq.decrease_key_or_push(&node, new_key);
                 vec[node] = Some(new_key);
             }
             ChangeKeyMethod::Update => {
-                let decreased = pq.update_key_or_push(&node, &new_key);
+                let res_updkey_push = pq.update_key_or_push(&node, new_key);
                 assert_eq!(
                     old_key.map(|old_key| new_key < old_key).unwrap_or(false),
-                    decreased
+                    matches!(res_updkey_push, ResUpdateKeyOrPush::Decreased)
                 );
                 vec[node] = Some(new_key);
             }
             ChangeKeyMethod::TryDecrease => {
-                let decreased = pq.try_decrease_key_or_push(&node, &new_key);
+                let res_try_deckey_push = pq.try_decrease_key_or_push(&node, new_key);
                 assert_eq!(
                     old_key.map(|old_key| new_key < old_key).unwrap_or(false),
-                    decreased
+                    matches!(res_try_deckey_push, ResTryDecreaseKeyOrPush::Decreased)
                 );
                 if old_key.is_none() || new_key < old_key.unwrap() {
                     vec[node] = Some(new_key);

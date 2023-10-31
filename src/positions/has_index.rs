@@ -19,13 +19,13 @@ impl<N> HeapPositionsHasIndex<N>
 where
     N: HasIndex,
 {
-    pub fn with_upper_limit(upper_limit: usize) -> Self {
+    pub fn with_index_bound(index_bound: usize) -> Self {
         Self {
-            positions: vec![NONE; upper_limit],
+            positions: vec![NONE; index_bound],
             ph: PhantomData,
         }
     }
-    pub(crate) fn upper_limit(&self) -> usize {
+    pub(crate) fn index_bound(&self) -> usize {
         self.positions.len()
     }
 }
