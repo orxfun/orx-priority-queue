@@ -1,5 +1,5 @@
 use super::heap::Heap;
-use crate::{positions::map::HeapPositionsMap, PriorityQueue, PriorityQueueDecKey};
+use crate::{positions::map::HeapPositionsMap, PriorityQueue, PriorityQueueDecKey, ResUpdateKey};
 use std::hash::Hash;
 
 /// Type alias for `DaryHeapWithMap<N, K, 2>`; see [`DaryHeapWithMap`] for details.
@@ -14,6 +14,19 @@ pub type QuarternaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 4>;
 /// See [`PriorityQueueDecKey`] for additional functionalities.
 ///
 /// `DaryHeapWithMap` achieves the additional features by making use of a map of nodes to positions on the heap.
+///
+/// # Flexibility (`DaryHeapWithMap`) vs Performance (`DaryHeapOfIndices`)
+///
+/// [`DaryHeapWithMap`] (hence its variants such as [`BinaryHeapWithMap`]) does not require to know
+/// the absolute size of the closed set.
+/// Furthermore, the node type needs to implement `Hash + Eq` rather than `HasIndex` trait defined in this crate.
+/// Due to these, `DaryHeapWithMap` might be considered as the more flexible [`PriorityQueueDecKey`] variant.
+///
+/// On the other hand, `DaryHeapOfIndices` (hence its variants such as `BinaryHeapOfIndices`),
+/// provides significantly faster accesses to positions of nodes on the heap.
+/// This is important for [`PriorityQueueDecKey`] operations such as `decrease_key` or `contains`.
+/// Furthermore, in many algorithms such as certain network algorithms where nodes enter and exit the queue,
+/// `index_bound` can often trivially be set to number of nodes.
 ///
 /// # Examples
 ///
@@ -76,11 +89,11 @@ pub type QuarternaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 4>;
 ///     pq.push(1, 17.0);
 ///     assert_eq!(Some(&(1, 17.0)), pq.peek());
 ///
-///     pq.decrease_key(&0, &7.0);
+///     pq.decrease_key(&0, 7.0);
 ///     assert_eq!(Some(&(0, 7.0)), pq.peek());
 ///
-///     let is_key_decreased = pq.try_decrease_key(&1, &20.0);
-///     assert!(!is_key_decreased);
+///     let res_try_deckey = pq.try_decrease_key(&1, 20.0);
+///     assert_eq!(res_try_deckey, ResTryDecreaseKey::Unchanged);
 ///
 ///     let popped = pq.pop();
 ///     assert_eq!(Some((0, 7.0)), popped);
@@ -132,6 +145,11 @@ where
             heap: Heap::new(Some(capacity), HeapPositionsMap::with_capacity(capacity)),
         }
     }
+    /// Returns the 'd' of the d-ary heap.
+    /// In other words, it represents the maximum number of children that each node on the heap can have.
+    pub const fn d() -> usize {
+        D
+    }
 }
 
 impl<N, K, const D: usize> PriorityQueue<N, K> for DaryHeapWithMap<N, K, D>
@@ -139,8 +157,13 @@ where
     N: Eq + Hash + Clone,
     K: PartialOrd + Clone,
 {
+    #[inline(always)]
     fn len(&self) -> usize {
         self.heap.len()
+    }
+    #[inline(always)]
+    fn capacity(&self) -> usize {
+        self.heap.capacity()
     }
     fn as_slice(&self) -> &[(N, K)] {
         self.heap.as_slice()
@@ -151,18 +174,23 @@ where
     fn clear(&mut self) {
         self.heap.clear()
     }
+    #[inline(always)]
     fn pop(&mut self) -> Option<(N, K)> {
         self.heap.pop()
     }
+    #[inline(always)]
     fn pop_node(&mut self) -> Option<N> {
         self.heap.pop_node()
     }
+    #[inline(always)]
     fn pop_key(&mut self) -> Option<K> {
         self.heap.pop_key()
     }
+    #[inline(always)]
     fn push(&mut self, node: N, key: K) {
         self.heap.push(node, key)
     }
+    #[inline(always)]
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
         self.heap.push_then_pop(node, key)
     }
@@ -177,18 +205,23 @@ where
     N: Eq + Hash + Clone,
     K: PartialOrd + Clone,
 {
+    #[inline(always)]
     fn contains(&self, node: &N) -> bool {
         self.heap.contains(node)
     }
+    #[inline(always)]
     fn key_of(&self, node: &N) -> Option<K> {
         self.heap.key_of(node)
     }
-    fn decrease_key(&mut self, node: &N, decreased_key: &K) {
+    #[inline(always)]
+    fn decrease_key(&mut self, node: &N, decreased_key: K) {
         self.heap.decrease_key(node, decreased_key)
     }
-    fn update_key(&mut self, node: &N, new_key: &K) -> bool {
+    #[inline(always)]
+    fn update_key(&mut self, node: &N, new_key: K) -> ResUpdateKey {
         self.heap.update_key(node, new_key)
     }
+    #[inline(always)]
     fn remove(&mut self, node: &N) -> K {
         self.heap.remove(node)
     }

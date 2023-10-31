@@ -16,26 +16,31 @@ pub trait HasIndex: Clone {
 }
 
 impl HasIndex for usize {
+    #[inline(always)]
     fn index(&self) -> usize {
         *self
     }
 }
 impl HasIndex for u64 {
+    #[inline(always)]
     fn index(&self) -> usize {
         *self as usize
     }
 }
 impl HasIndex for u32 {
+    #[inline(always)]
     fn index(&self) -> usize {
         *self as usize
     }
 }
 impl HasIndex for u16 {
+    #[inline(always)]
     fn index(&self) -> usize {
         *self as usize
     }
 }
 impl HasIndex for u8 {
+    #[inline(always)]
     fn index(&self) -> usize {
         *self as usize
     }
