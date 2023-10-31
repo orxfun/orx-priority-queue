@@ -1,6 +1,8 @@
 use super::heap_positions::{HeapPositions, HeapPositionsDecKey};
 use crate::HasIndex;
-use std::marker::PhantomData;
+use alloc::vec;
+use alloc::vec::Vec;
+use core::marker::PhantomData;
 
 /// using usize::MAX as None
 const NONE: usize = usize::MAX;

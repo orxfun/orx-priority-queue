@@ -1,6 +1,8 @@
 use super::heap::Heap;
-use crate::{positions::map::HeapPositionsMap, PriorityQueue, PriorityQueueDecKey, ResUpdateKey};
-use std::hash::Hash;
+use crate::{
+    positions::map::{HeapPositionsMap, Index},
+    PriorityQueue, PriorityQueueDecKey, ResUpdateKey,
+};
 
 /// Type alias for `DaryHeapWithMap<N, K, 2>`; see [`DaryHeapWithMap`] for details.
 pub type BinaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 2>;
@@ -42,7 +44,7 @@ pub type QuarternaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 4>;
 ///     P: PriorityQueue<usize, f64>
 /// {
 ///     pq.clear();
-///     
+///
 ///     pq.push(0, 42.0);
 ///     assert_eq!(Some(&(0, 42.0)), pq.peek());
 ///
@@ -82,7 +84,7 @@ pub type QuarternaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 4>;
 ///     P: PriorityQueueDecKey<usize, f64>
 /// {
 ///     pq.clear();
-///     
+///
 ///     pq.push(0, 42.0);
 ///     assert_eq!(Some(&(0, 42.0)), pq.peek());
 ///
@@ -117,7 +119,7 @@ pub type QuarternaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 4>;
 #[derive(Debug, Clone)]
 pub struct DaryHeapWithMap<N, K, const D: usize = 2>
 where
-    N: Eq + Hash + Clone,
+    N: Index,
     K: PartialOrd + Clone,
 {
     heap: Heap<N, K, HeapPositionsMap<N>, D>,
@@ -125,7 +127,7 @@ where
 
 impl<N, K, const D: usize> Default for DaryHeapWithMap<N, K, D>
 where
-    N: Eq + Hash + Clone,
+    N: Index,
     K: PartialOrd + Clone,
 {
     fn default() -> Self {
@@ -136,7 +138,7 @@ where
 }
 impl<N, K, const D: usize> DaryHeapWithMap<N, K, D>
 where
-    N: Eq + Hash + Clone,
+    N: Index,
     K: PartialOrd + Clone,
 {
     /// Creates a new d-ary heap with the given initial `capacity` on the number of nodes to simultaneously exist on the heap.
@@ -154,7 +156,7 @@ where
 
 impl<N, K, const D: usize> PriorityQueue<N, K> for DaryHeapWithMap<N, K, D>
 where
-    N: Eq + Hash + Clone,
+    N: Index,
     K: PartialOrd + Clone,
 {
     #[inline(always)]
@@ -202,7 +204,7 @@ where
 }
 impl<N, K, const D: usize> PriorityQueueDecKey<N, K> for DaryHeapWithMap<N, K, D>
 where
-    N: Eq + Hash + Clone,
+    N: Index,
     K: PartialOrd + Clone,
 {
     #[inline(always)]

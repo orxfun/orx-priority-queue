@@ -1,36 +1,56 @@
 use super::heap_positions::{HeapPositions, HeapPositionsDecKey};
+
+#[cfg(not(feature = "std"))]
+use alloc::collections::BTreeMap;
+#[cfg(feature = "std")]
 use std::{collections::HashMap, hash::Hash};
+
+#[cfg(not(feature = "std"))]
+pub trait Index: Eq + Clone + Ord {}
+#[cfg(not(feature = "std"))]
+impl<T> Index for T where T: Eq + Clone + Ord {}
+#[cfg(feature = "std")]
+pub trait Index: Eq + Clone + Hash {}
+#[cfg(feature = "std")]
+impl<T> Index for T where T: Eq + Clone + Hash {}
+
+#[cfg(not(feature = "std"))]
+type Map<N> = BTreeMap<N, usize>;
+#[cfg(feature = "std")]
+type Map<N> = HashMap<N, usize>;
 
 #[derive(Clone, Debug)]
 pub struct HeapPositionsMap<N>
 where
-    N: Eq + Hash + Clone,
+    N: Index,
 {
-    map: HashMap<N, usize>,
+    map: Map<N>,
 }
 impl<N> Default for HeapPositionsMap<N>
 where
-    N: Eq + Hash + Clone,
+    N: Index,
 {
     fn default() -> Self {
-        Self {
-            map: HashMap::new(),
-        }
+        Self { map: Map::new() }
     }
 }
 impl<N> HeapPositionsMap<N>
 where
-    N: Eq + Hash + Clone,
+    N: Index,
 {
+    #[allow(unused)]
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
-            map: HashMap::with_capacity(capacity),
+            #[cfg(not(std))]
+            map: Map::new(),
+            #[cfg(std)]
+            map: Map::with_capacity(capacity),
         }
     }
 }
 impl<N> HeapPositions<N> for HeapPositionsMap<N>
 where
-    N: Eq + Hash + Clone,
+    N: Index,
 {
     fn clear(&mut self) {
         self.map.clear();
@@ -72,4 +92,4 @@ where
     }
 }
 
-impl<N> HeapPositionsDecKey<N> for HeapPositionsMap<N> where N: Eq + Hash + Clone {}
+impl<N> HeapPositionsDecKey<N> for HeapPositionsMap<N> where N: Index {}

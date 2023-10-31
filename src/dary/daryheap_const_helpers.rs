@@ -1,4 +1,6 @@
-use std::mem::MaybeUninit;
+use alloc::vec;
+use alloc::vec::Vec;
+use core::mem::MaybeUninit;
 
 pub(crate) fn init_tree<N, K>(capacity: Option<usize>) -> Vec<(N, K)> {
     match capacity {
