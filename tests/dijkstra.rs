@@ -30,7 +30,7 @@ fn dijkstra() {
             // For each node we can reach, see if we can find a way with
             // a lower cost going through this node
             for edge in &adj_list[position] {
-                heap.try_decrease_key_or_push(&edge.node, &(cost + edge.cost));
+                _ = heap.try_decrease_key_or_push(&edge.node, cost + edge.cost);
             }
         }
 

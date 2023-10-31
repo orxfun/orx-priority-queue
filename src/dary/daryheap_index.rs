@@ -1,6 +1,7 @@
 use super::heap::Heap;
 use crate::{
     positions::has_index::HeapPositionsHasIndex, HasIndex, PriorityQueue, PriorityQueueDecKey,
+    ResUpdateKey,
 };
 
 /// Type alias for `DaryHeapOfIndices<N, K, 2>`; see [`DaryHeapOfIndices`] for details.
@@ -38,6 +39,19 @@ pub type QuarternaryHeapOfIndices<N, K> = DaryHeapOfIndices<N, K, 4>;
 ///
 /// `DaryHeapWithMap` provides a more flexible approach.
 ///
+/// # Flexibility (`DaryHeapWithMap`) vs Performance (`DaryHeapOfIndices`)
+///
+/// `DaryHeapWithMap` (hence its variants such as `BinaryHeapWithMap`) does not require to know
+/// the absolute size of the closed set.
+/// Furthermore, the node type needs to implement `Hash + Eq` rather than `HasIndex` trait defined in this crate.
+/// Due to these, `DaryHeapWithMap` might be considered as the more flexible [`PriorityQueueDecKey`] variant.
+///
+/// On the other hand, [`DaryHeapOfIndices`] (hence its variants such as [`BinaryHeapOfIndices`]),
+/// provides significantly faster accesses to positions of nodes on the heap.
+/// This is important for [`PriorityQueueDecKey`] operations such as `decrease_key` or `contains`.
+/// Furthermore, in many algorithms such as certain network algorithms where nodes enter and exit the queue,
+/// `index_bound` can often trivially be set to number of nodes.
+///
 /// # Examples
 ///
 /// ## Heap as a `PriorityQueue`
@@ -69,11 +83,11 @@ pub type QuarternaryHeapOfIndices<N, K> = DaryHeapOfIndices<N, K, 4>;
 /// }
 ///
 /// // d-hap heap using id's to locate existing nodes (although decrease-key is not used here)
-/// test_priority_queue(DaryHeapOfIndices::<_, _, 4>::with_upper_limit(32));
+/// test_priority_queue(DaryHeapOfIndices::<_, _, 4>::with_index_bound(32));
 /// // using type aliases to simplify signatures
-/// test_priority_queue(BinaryHeapOfIndices::with_upper_limit(16));
-/// test_priority_queue(TernaryHeapOfIndices::with_upper_limit(16));
-/// test_priority_queue(QuarternaryHeapOfIndices::with_upper_limit(16));
+/// test_priority_queue(BinaryHeapOfIndices::with_index_bound(16));
+/// test_priority_queue(TernaryHeapOfIndices::with_index_bound(16));
+/// test_priority_queue(QuarternaryHeapOfIndices::with_index_bound(16));
 /// ```
 ///
 /// ## Heap as a `PriorityQueueDecKey`
@@ -95,11 +109,11 @@ pub type QuarternaryHeapOfIndices<N, K> = DaryHeapOfIndices<N, K, 4>;
 ///     pq.push(1, 17.0);
 ///     assert_eq!(Some(&(1, 17.0)), pq.peek());
 ///
-///     pq.decrease_key(&0, &7.0);
+///     pq.decrease_key(&0, 7.0);
 ///     assert_eq!(Some(&(0, 7.0)), pq.peek());
 ///
-///     let is_key_decreased = pq.try_decrease_key(&1, &20.0);
-///     assert!(!is_key_decreased);
+///     let res_try_deckey = pq.try_decrease_key(&1, 20.0);
+///     assert_eq!(res_try_deckey, ResTryDecreaseKey::Unchanged);
 ///
 ///     let popped = pq.pop();
 ///     assert_eq!(Some((0, 7.0)), popped);
@@ -110,11 +124,11 @@ pub type QuarternaryHeapOfIndices<N, K> = DaryHeapOfIndices<N, K, 4>;
 ///     assert!(pq.is_empty());
 /// }
 /// // d-ary heap using id's to locate existing nodes
-/// test_priority_queue_deckey(DaryHeapOfIndices::<_, _, 3>::with_upper_limit(32));
+/// test_priority_queue_deckey(DaryHeapOfIndices::<_, _, 3>::with_index_bound(32));
 /// // using type aliases to simplify signatures
-/// test_priority_queue_deckey(BinaryHeapOfIndices::with_upper_limit(16));
-/// test_priority_queue_deckey(TernaryHeapOfIndices::with_upper_limit(16));
-/// test_priority_queue_deckey(QuarternaryHeapOfIndices::with_upper_limit(16));
+/// test_priority_queue_deckey(BinaryHeapOfIndices::with_index_bound(16));
+/// test_priority_queue_deckey(TernaryHeapOfIndices::with_index_bound(16));
+/// test_priority_queue_deckey(QuarternaryHeapOfIndices::with_index_bound(16));
 /// ```
 #[derive(Clone, Debug)]
 pub struct DaryHeapOfIndices<N, K, const D: usize = 2>
@@ -132,9 +146,12 @@ where
 {
     /// As explained in [`DaryHeapOfIndices`],
     /// this heap is useful when the nodes come from a closed set with a known size.
-    /// Therefore, the heap has a strict `upper_limit` on the index of a node which can enter the heap.
+    /// Therefore, the heap has a strict exclusive upper bound on the index of a node which can enter the heap,
+    /// defined by the argument `with_index_bound`.
     ///
-    /// The upper limit of the queue can be obtained by the `upper_limit` method.
+    /// The closed set of indices which can enter the heap is [0, 1, ..., `index_bound`).
+    ///
+    /// The upper bound on the indices of a `DaryHeapOfIndices` can be obtained by the `index_bound` method.
     ///
     /// # Examples
     ///
@@ -142,25 +159,22 @@ where
     /// use orx_priority_queue::*;
     ///
     /// // set of possible nodes which can enter the heap is closed and has 16 elements
-    /// let mut pq = DaryHeapOfIndices::<usize, _, 3>::with_upper_limit(16);
+    /// let mut pq = BinaryHeapOfIndices::with_index_bound(16);
     ///
-    /// assert_eq!(16, pq.upper_limit());
+    /// assert_eq!(16, pq.index_bound());
     ///
     /// // 8-th node enters the queue with key of 100.0
-    /// pq.push(7, 100.0);
+    /// pq.push(7usize, 100.0);
     ///
     /// // third node enters
     /// pq.push(2, 42.0);
     ///
-    /// // the following line would've panicked since there exist no 17-th node in the closed set
+    /// // the following line would've panicked since there exist no node with index 16 in the closed set [0, 1, ..., 15]
     /// // pq.push(16, 7.0);
     /// ```
-    pub fn with_upper_limit(upper_limit: usize) -> Self {
+    pub fn with_index_bound(index_bound: usize) -> Self {
         Self {
-            heap: Heap::new(
-                Some(upper_limit),
-                HeapPositionsHasIndex::with_upper_limit(upper_limit),
-            ),
+            heap: Heap::new(None, HeapPositionsHasIndex::with_index_bound(index_bound)),
         }
     }
 
@@ -168,9 +182,15 @@ where
     ///
     /// # Panics
     ///
-    /// Panics if a node with an index greater than or equal to the `upper_limit` is pushed to the queue.
-    pub fn upper_limit(&self) -> usize {
-        self.heap.positions().upper_limit()
+    /// Panics if a node with an index greater than or equal to the `index_bound` is pushed to the queue.
+    pub fn index_bound(&self) -> usize {
+        self.heap.positions().index_bound()
+    }
+
+    /// Returns the 'd' of the d-ary heap.
+    /// In other words, it represents the maximum number of children that each node on the heap can have.
+    pub const fn d() -> usize {
+        D
     }
 }
 
@@ -179,8 +199,13 @@ where
     N: HasIndex,
     K: PartialOrd + Clone,
 {
+    #[inline(always)]
     fn len(&self) -> usize {
         self.heap.len()
+    }
+    #[inline(always)]
+    fn capacity(&self) -> usize {
+        self.heap.capacity()
     }
     fn as_slice(&self) -> &[(N, K)] {
         self.heap.as_slice()
@@ -191,33 +216,23 @@ where
     fn clear(&mut self) {
         self.heap.clear()
     }
+    #[inline(always)]
     fn pop(&mut self) -> Option<(N, K)> {
         self.heap.pop()
     }
+    #[inline(always)]
     fn pop_node(&mut self) -> Option<N> {
         self.heap.pop_node()
     }
+    #[inline(always)]
     fn pop_key(&mut self) -> Option<K> {
         self.heap.pop_key()
     }
-    /// Pushes the given (`node`, `key`) pair to the queue.
-    ///
-    /// # Panics
-    ///
-    /// Panics if `node.index()` is greater than the upper limit of the heap.
+    #[inline(always)]
     fn push(&mut self, node: N, key: K) {
         self.heap.push(node, key)
     }
-    /// Performs the push with given (`node`, `key`) followed by the pop operation.
-    ///
-    /// Since the queue cannot be empty after the push, the return type is not optional.
-    ///
-    /// The reason of merging the calls is that handling two instructions at once
-    /// is more efficient for certain implementations, such as for the binary heap.
-    ///
-    /// # Panics
-    ///
-    /// Panics if `node.index()` is greater than the upper limit of the heap.
+    #[inline(always)]
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
         self.heap.push_then_pop(node, key)
     }
@@ -232,18 +247,23 @@ where
     N: HasIndex,
     K: PartialOrd + Clone,
 {
+    #[inline(always)]
     fn contains(&self, node: &N) -> bool {
         self.heap.contains(node)
     }
+    #[inline(always)]
     fn key_of(&self, node: &N) -> Option<K> {
         self.heap.key_of(node)
     }
-    fn decrease_key(&mut self, node: &N, decreased_key: &K) {
+    #[inline(always)]
+    fn decrease_key(&mut self, node: &N, decreased_key: K) {
         self.heap.decrease_key(node, decreased_key)
     }
-    fn update_key(&mut self, node: &N, new_key: &K) -> bool {
+    #[inline(always)]
+    fn update_key(&mut self, node: &N, new_key: K) -> ResUpdateKey {
         self.heap.update_key(node, new_key)
     }
+    #[inline(always)]
     fn remove(&mut self, node: &N) -> K {
         self.heap.remove(node)
     }

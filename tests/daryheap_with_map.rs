@@ -15,6 +15,8 @@ fn test_dary_forall() {
         test_dary_for::<8>();
         test_dary_for::<13>();
         test_dary_for::<16>();
+        test_dary_for::<32>();
+        test_dary_for::<64>();
     }
 }
 

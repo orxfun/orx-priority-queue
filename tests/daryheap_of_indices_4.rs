@@ -8,7 +8,7 @@ use priority_queue_tests::*;
 const D: usize = 4;
 
 fn new_heap() -> DaryHeapOfIndices<usize, f64, D> {
-    DaryHeapOfIndices::with_upper_limit(125)
+    DaryHeapOfIndices::with_index_bound(125)
 }
 
 #[test]

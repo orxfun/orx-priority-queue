@@ -15,11 +15,13 @@ fn test_dary_forall() {
         test_dary_for::<8>();
         test_dary_for::<13>();
         test_dary_for::<16>();
+        test_dary_for::<32>();
+        test_dary_for::<64>();
     }
 }
 
 fn test_dary_for<const D: usize>() {
-    let new_heap = || DaryHeapOfIndices::<usize, f64, D>::with_upper_limit(125);
+    let new_heap = || DaryHeapOfIndices::<usize, f64, D>::with_index_bound(125);
 
     let change_key = [
         ChangeKeyMethod::Decrease,

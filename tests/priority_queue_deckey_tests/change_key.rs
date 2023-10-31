@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use orx_priority_queue::PriorityQueueDecKey;
+use orx_priority_queue::{PriorityQueueDecKey, ResTryDecreaseKey, ResUpdateKey};
 use rand::prelude::*;
 use std::cmp::Ordering;
 
@@ -43,18 +43,24 @@ where
 
         match change_key {
             ChangeKeyMethod::Decrease => {
-                pq.decrease_key(&node, &new_key);
+                pq.decrease_key(&node, new_key);
                 vec[node] = (node, new_key);
             }
             ChangeKeyMethod::Update => {
-                let decreased = pq.update_key(&node, &new_key);
-                assert_eq!(new_key < old_key, decreased);
+                let res_updkey = pq.update_key(&node, new_key);
+                assert_eq!(
+                    new_key < old_key,
+                    matches!(res_updkey, ResUpdateKey::Decreased)
+                );
                 vec[node] = (node, new_key);
             }
             ChangeKeyMethod::TryDecrease => {
-                let decreased = pq.try_decrease_key(&node, &new_key);
-                assert_eq!(new_key < old_key, decreased);
-                if decreased {
+                let res_try_deckey = pq.try_decrease_key(&node, new_key);
+                assert_eq!(
+                    new_key < old_key,
+                    matches!(res_try_deckey, ResTryDecreaseKey::Decreased)
+                );
+                if matches!(res_try_deckey, ResTryDecreaseKey::Decreased) {
                     vec[node] = (node, new_key);
                 }
             }
