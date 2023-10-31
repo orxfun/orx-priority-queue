@@ -9,6 +9,10 @@ repository = "https://github.com/orxfun/orx-priority-queue/"
 keywords = ["priority", "queue", "heap", "dary", "binary"]
 categories = ["data-structures"]
 
+[features]
+default = ["std"]
+std = []
+
 [dependencies]
 
 [dev-dependencies]

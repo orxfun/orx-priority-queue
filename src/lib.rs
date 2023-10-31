@@ -306,6 +306,9 @@
     clippy::missing_panics_doc,
     clippy::todo
 )]
+#![cfg_attr(not(feature = "std"), no_std)]
+
+extern crate alloc;
 
 mod dary;
 mod has_index;
