@@ -1,14 +1,14 @@
 mod priority_queue_deckey_tests;
 mod priority_queue_tests;
 
-use orx_priority_queue::DaryHeapWithMap;
+use orx_priority_queue::DaryHeapOfIndices;
 use priority_queue_deckey_tests::*;
 use priority_queue_tests::*;
 
 const D: usize = 4;
 
-fn new_heap() -> DaryHeapWithMap<usize, f64, D> {
-    DaryHeapWithMap::default()
+fn new_heap() -> DaryHeapOfIndices<usize, f64, D> {
+    DaryHeapOfIndices::with_index_bound(125)
 }
 
 #[test]
@@ -19,11 +19,6 @@ fn len() {
 #[test]
 fn is_empty() {
     test_is_empty(new_heap())
-}
-
-#[test]
-fn as_slice() {
-    test_as_slice(new_heap())
 }
 
 #[test]

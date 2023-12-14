@@ -1,4 +1,4 @@
-use orx_priority_queue::PriorityQueue;
+use orx_priority_queue::{NodeKeyRef, PriorityQueue};
 use rand::prelude::*;
 
 pub fn test_push_then_pop<P>(mut pq: P)
@@ -23,7 +23,8 @@ where
     pq.push(1, 5.0);
     let popped = pq.push_then_pop(0, 10.0);
     assert_eq!((1, 5.0), popped);
-    assert_eq!(Some(&(0, 10.0)), pq.peek());
+    assert_eq!(Some(&0), pq.peek().map(|nk| nk.node()));
+    assert_eq!(Some(&10.0), pq.peek().map(|nk| nk.key()));
 
     // when better than all items
     pq.clear();
@@ -40,7 +41,7 @@ where
 
 pub fn test_push_then_pop_randomized<P>(mut pq: P)
 where
-    P: PriorityQueue<usize, f64>,
+    P: PriorityQueue<usize, f64> + Clone,
 {
     const N: usize = 50;
 

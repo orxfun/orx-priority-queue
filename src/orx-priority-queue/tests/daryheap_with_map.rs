@@ -31,7 +31,6 @@ fn test_dary_for<const D: usize>() {
 
     test_len(new_heap());
     test_is_empty(new_heap());
-    test_as_slice(new_heap());
     test_peek(new_heap());
     test_clear(new_heap());
     test_push_pop(new_heap());

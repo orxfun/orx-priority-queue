@@ -1,9 +1,25 @@
+use crate::NodeKeyRef;
+
 /// A priority queue which allows pushing (N, K)=(node, key) pairs to the collection,
 /// and popping the foremost element having the lowest key.
-pub trait PriorityQueue<N, K>: Clone
+pub trait PriorityQueue<N, K>
 where
     K: PartialOrd,
 {
+    /// Item providing references to node & key pairs which are yielded by the iterator.
+    type NodeKey<'a>: NodeKeyRef<'a, N, K>
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
+
+    /// An iterator over the (node, key) pairs on the priority queue in an arbitrary order.
+    type Iter<'a>: Iterator<Item = Self::NodeKey<'a>>
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
+
     /// Number of elements in the queue.
     ///
     /// # Examples
@@ -21,7 +37,6 @@ where
     /// assert_eq!(1, queue.len());
     /// ```
     fn len(&self) -> usize;
-    // todo: documentation
     /// Capacity of the heap.
     fn capacity(&self) -> usize;
 
@@ -42,28 +57,6 @@ where
         self.len() == 0
     }
 
-    /// Returns the nodes and keys currently in the queue as a slice;
-    /// not necessarily sorted.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use orx_priority_queue::*;
-    ///
-    /// let mut queue = QuarternaryHeapWithMap::default();
-    /// queue.push("x", 42);
-    /// queue.push("y", 7);
-    /// queue.push("z", 99);
-    ///
-    /// let slice = queue.as_slice();
-    ///
-    /// assert_eq!(3, slice.len());
-    /// assert!(slice.contains(&("x", 42)));
-    /// assert!(slice.contains(&("y", 7)));
-    /// assert!(slice.contains(&("z", 99)));
-    /// ```
-    fn as_slice(&self) -> &[(N, K)];
-
     /// Returns, without popping, a reference to the foremost element of the queue;
     /// returns None if the queue is empty.
     ///
@@ -80,7 +73,7 @@ where
     /// queue.push(21, 5.0);
     /// assert_eq!(Some(&(42, 1.0)), queue.peek());
     /// ```
-    fn peek(&self) -> Option<&(N, K)>;
+    fn peek(&self) -> Option<Self::NodeKey<'_>>;
 
     /// Clears the queue.
     ///
@@ -89,7 +82,7 @@ where
     /// ```
     /// use orx_priority_queue::*;
     ///
-    /// let mut queue = TernaryHeap::default();
+    /// let mut queue = QuarternaryHeap::default();
     /// assert!(queue.is_empty());
     ///
     /// queue.push(0, 12.0);
@@ -211,6 +204,11 @@ where
     /// The reason of merging the calls is that handling two instructions at once
     /// is more efficient for certain implementations, such as for the binary heap.
     ///
+    /// According to benchmark defined in "benches/push_then_pop.rs",
+    /// replacing the consequent `push` and `pop` calls with a `push_then_pop` call
+    /// increases the performance by a factor 2 or 3 when the underlying struct
+    /// takes benefit of this such as the `DaryHeap` and its variants.
+    ///
     /// # Examples
     ///
     /// ```
@@ -248,7 +246,6 @@ where
     /// ```
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K);
 
-    /// Test method which returns whether or not the queue is valid.
-    #[cfg(test)]
-    fn is_valid(&self) -> bool;
+    /// Returns an iterator visiting all values on the heap in arbitrary order.
+    fn iter(&self) -> Self::Iter<'_>;
 }

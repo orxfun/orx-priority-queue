@@ -1,8 +1,7 @@
-use std::collections::HashSet;
-
 use itertools::Itertools;
-use orx_priority_queue::PriorityQueueDecKey;
+use orx_priority_queue::{NodeKeyRef, PriorityQueueDecKey};
 use rand::Rng;
+use std::collections::HashSet;
 
 pub fn test_mixed<P>(mut pq: P)
 where
@@ -28,7 +27,7 @@ where
         } else {
             rng.gen_range(0..5)
         };
-        let enqueued = pq.as_slice().iter().map(|x| x.0).collect_vec();
+        let enqueued = pq.iter().map(|x| *x.node()).collect_vec();
         let mut to_drop = HashSet::new();
         for _ in 0..num_drop {
             let ind = rng.gen_range(0..enqueued.len());

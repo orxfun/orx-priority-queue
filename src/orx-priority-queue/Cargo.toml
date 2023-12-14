@@ -1,0 +1,29 @@
+[package]
+name = "orx-priority-queue"
+version = "1.0.0"
+edition = "2021"
+authors = ["orxfun <orx.ugur.arikan@gmail.com>"]
+description = "Priority queue traits and efficient d-ary heap implementations."
+license = "MIT"
+repository = "https://github.com/orxfun/orx-priority-queue/"
+keywords = ["priority", "queue", "heap", "dary", "binary"]
+categories = ["algorithms", "data-structures", "mathematics"]
+
+[features]
+default = ["std", "priority-queue"]
+std = []
+impl_priority_queue = ["priority-queue"]
+
+[dependencies]
+priority-queue = { version = "*", optional = true }
+
+
+[[bench]]
+name = "push_then_pop"
+harness = false
+
+[dev-dependencies]
+itertools = "0.11"
+rand = "0.8"
+rand_chacha = "0.3"
+criterion = { version = "0.5", features = ["html_reports"] }

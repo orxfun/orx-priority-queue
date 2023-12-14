@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use orx_priority_queue::PriorityQueue;
+use orx_priority_queue::{DaryHeap, PriorityQueue};
 use rand::prelude::*;
 use std::cmp::Ordering;
 
@@ -11,10 +11,9 @@ fn order<'a, 'b>(node_key_1: &'a &(usize, f64), node_key_2: &'b &(usize, f64)) -
         Ordering::Greater
     }
 }
-pub fn test_as_slice<P>(mut pq: P)
-where
-    P: PriorityQueue<usize, f64>,
-{
+
+#[allow(dead_code)]
+pub fn test_as_slice<const D: usize>(mut pq: DaryHeap<usize, f64, D>) {
     const N: usize = 50;
 
     // fill it up

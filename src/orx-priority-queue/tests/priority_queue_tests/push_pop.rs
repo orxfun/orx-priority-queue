@@ -1,8 +1,7 @@
-use std::cmp::Ordering;
-
 use itertools::Itertools;
 use orx_priority_queue::PriorityQueue;
 use rand::prelude::*;
+use std::cmp::Ordering;
 
 pub fn test_push_pop<P>(mut pq: P)
 where

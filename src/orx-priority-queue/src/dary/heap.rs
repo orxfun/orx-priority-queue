@@ -146,6 +146,60 @@ where
             }
         }
     }
+
+    #[cfg(test)]
+    #[allow(dead_code)]
+    fn is_valid(&self) -> bool {
+        if !self.positions.is_valid(offset::<D>(), &self.tree) {
+            false
+        } else {
+            fn is_valid_downwards<N, K, const D: usize>(parent: usize, tree: &[(N, K)]) -> bool
+            where
+                K: PartialOrd,
+            {
+                for i in 0..D {
+                    let child = left_child_of::<D>(parent) + i;
+                    if child >= tree.len() {
+                        return true;
+                    } else if tree[child].1 < tree[parent].1 {
+                        return false;
+                    } else {
+                        let downwards_from_child = is_valid_downwards::<N, K, D>(child, tree);
+                        if !downwards_from_child {
+                            return false;
+                        }
+                    }
+                }
+                true
+            }
+            is_valid_downwards::<N, K, D>(offset::<D>(), &self.tree)
+        }
+    }
+
+    // additional functionalities
+    /// Returns the nodes and keys currently in the queue as a slice;
+    /// not necessarily sorted.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use orx_priority_queue::*;
+    ///
+    /// let mut queue = QuarternaryHeapWithMap::default();
+    /// queue.push("x", 42);
+    /// queue.push("y", 7);
+    /// queue.push("z", 99);
+    ///
+    /// let slice = queue.as_slice();
+    ///
+    /// assert_eq!(3, slice.len());
+    /// assert!(slice.contains(&("x", 42)));
+    /// assert!(slice.contains(&("y", 7)));
+    /// assert!(slice.contains(&("z", 99)));
+    /// ```
+    pub(crate) fn as_slice(&self) -> &[(N, K)] {
+        &self.tree[offset::<D>()..]
+    }
 }
 
 impl<N, K, P, const D: usize> PriorityQueue<N, K> for Heap<N, K, P, D>
@@ -154,6 +208,9 @@ where
     K: PartialOrd + Clone,
     P: HeapPositions<N>,
 {
+    type NodeKey<'a> = &'a (N, K) where Self: 'a, N: 'a, K: 'a;
+    type Iter<'a> = std::slice::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
+
     fn len(&self) -> usize {
         self.tree.len() - offset::<D>()
     }
@@ -166,10 +223,6 @@ where
 
     fn peek(&self) -> Option<&(N, K)> {
         self.tree.get(offset::<D>())
-    }
-
-    fn as_slice(&self) -> &[(N, K)] {
-        &self.tree[offset::<D>()..]
     }
 
     fn clear(&mut self) {
@@ -235,32 +288,8 @@ where
         }
     }
 
-    #[cfg(test)]
-    fn is_valid(&self) -> bool {
-        if !self.positions.is_valid(offset::<D>(), &self.tree) {
-            false
-        } else {
-            fn is_valid_downwards<N, K, const D: usize>(parent: usize, tree: &[(N, K)]) -> bool
-            where
-                K: PartialOrd,
-            {
-                for i in 0..D {
-                    let child = left_child_of::<D>(parent) + i;
-                    if child >= tree.len() {
-                        return true;
-                    } else if tree[child].1 < tree[parent].1 {
-                        return false;
-                    } else {
-                        let downwards_from_child = is_valid_downwards::<N, K, D>(child, tree);
-                        if !downwards_from_child {
-                            return false;
-                        }
-                    }
-                }
-                true
-            }
-            is_valid_downwards::<N, K, D>(offset::<D>(), &self.tree)
-        }
+    fn iter(&self) -> Self::Iter<'_> {
+        self.as_slice().iter()
     }
 }
 
