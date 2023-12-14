@@ -10,7 +10,7 @@ keywords = ["priority", "queue", "heap", "dary", "binary"]
 categories = ["algorithms", "data-structures", "mathematics"]
 
 [features]
-default = ["std", "priority-queue"]
+default = ["std"]
 std = []
 impl_priority_queue = ["priority-queue"]
 
