@@ -3,8 +3,6 @@ use crate::{positions::none::HeapPositionsNone, PriorityQueue};
 
 /// Type alias for `DaryHeap<N, K, 2>`; see [`DaryHeap`] for details.
 pub type BinaryHeap<N, K> = DaryHeap<N, K, 2>;
-/// Type alias for `DaryHeap<N, K, 3>`; see [`DaryHeap`] for details.
-pub type TernaryHeap<N, K> = DaryHeap<N, K, 3>;
 /// Type alias for `DaryHeap<N, K, 4>`; see [`DaryHeap`] for details.
 pub type QuarternaryHeap<N, K> = DaryHeap<N, K, 4>;
 
@@ -30,10 +28,12 @@ pub type QuarternaryHeap<N, K> = DaryHeap<N, K, 4>;
 ///     pq.clear();
 ///     
 ///     pq.push(0, 42.0);
-///     assert_eq!(Some(&(0, 42.0)), pq.peek());
+///     assert_eq!(Some(&0), pq.peek().map(|x| x.node()));
+///     assert_eq!(Some(&42.0), pq.peek().map(|x| x.key()));
 ///
 ///     pq.push(1, 7.0);
-///     assert_eq!(Some(&(1, 7.0)), pq.peek());
+///     assert_eq!(Some(&1), pq.peek().map(|x| x.node()));
+///     assert_eq!(Some(&7.0), pq.peek().map(|x| x.key()));
 ///
 ///     let popped = pq.pop();
 ///     assert_eq!(Some((1, 7.0)), popped);
@@ -50,8 +50,8 @@ pub type QuarternaryHeap<N, K> = DaryHeap<N, K, 4>;
 /// // using type aliases to simplify signatures
 /// test_priority_queue(BinaryHeap::default());
 /// test_priority_queue(BinaryHeap::with_capacity(16));
-/// test_priority_queue(TernaryHeap::default());
-/// test_priority_queue(TernaryHeap::with_capacity(16));
+/// test_priority_queue(QuarternaryHeap::default());
+/// test_priority_queue(QuarternaryHeap::with_capacity(16));
 /// test_priority_queue(QuarternaryHeap::default());
 /// test_priority_queue(QuarternaryHeap::with_capacity(16));
 /// ```
@@ -102,6 +102,31 @@ where
     pub const fn d() -> usize {
         D
     }
+
+    // additional functionalities
+    /// Returns the nodes and keys currently in the queue as a slice;
+    /// not necessarily sorted.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use orx_priority_queue::*;
+    ///
+    /// let mut queue = QuarternaryHeapWithMap::default();
+    /// queue.push("x", 42);
+    /// queue.push("y", 7);
+    /// queue.push("z", 99);
+    ///
+    /// let slice = queue.as_slice();
+    ///
+    /// assert_eq!(3, slice.len());
+    /// assert!(slice.contains(&("x", 42)));
+    /// assert!(slice.contains(&("y", 7)));
+    /// assert!(slice.contains(&("z", 99)));
+    /// ```
+    pub fn as_slice(&self) -> &[(N, K)] {
+        self.heap.as_slice()
+    }
 }
 
 impl<N, K, const D: usize> PriorityQueue<N, K> for DaryHeap<N, K, D>
@@ -109,6 +134,9 @@ where
     N: Clone,
     K: PartialOrd + Clone,
 {
+    type NodeKey<'a> = &'a (N, K) where Self: 'a, N: 'a, K: 'a;
+    type Iter<'a> = std::slice::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
+
     #[inline(always)]
     fn len(&self) -> usize {
         self.heap.len()
@@ -116,9 +144,6 @@ where
     #[inline(always)]
     fn capacity(&self) -> usize {
         self.heap.capacity()
-    }
-    fn as_slice(&self) -> &[(N, K)] {
-        self.heap.as_slice()
     }
     fn peek(&self) -> Option<&(N, K)> {
         self.heap.peek()
@@ -146,8 +171,8 @@ where
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
         self.heap.push_then_pop(node, key)
     }
-    #[cfg(test)]
-    fn is_valid(&self) -> bool {
-        self.heap.is_valid()
+
+    fn iter(&self) -> Self::Iter<'_> {
+        self.as_slice().iter()
     }
 }

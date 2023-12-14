@@ -5,7 +5,7 @@ use orx_priority_queue::DaryHeapWithMap;
 use priority_queue_deckey_tests::*;
 use priority_queue_tests::*;
 
-const D: usize = 2;
+const D: usize = 4;
 
 fn new_heap() -> DaryHeapWithMap<usize, f64, D> {
     DaryHeapWithMap::default()
@@ -19,11 +19,6 @@ fn len() {
 #[test]
 fn is_empty() {
     test_is_empty(new_heap())
-}
-
-#[test]
-fn as_slice() {
-    test_as_slice(new_heap())
 }
 
 #[test]
