@@ -26,7 +26,7 @@ pub type QuarternaryHeap<N, K> = DaryHeap<N, K, 4>;
 ///     P: PriorityQueue<usize, f64>
 /// {
 ///     pq.clear();
-///     
+///
 ///     pq.push(0, 42.0);
 ///     assert_eq!(Some(&0), pq.peek().map(|x| x.node()));
 ///     assert_eq!(Some(&42.0), pq.peek().map(|x| x.key()));
@@ -135,7 +135,7 @@ where
     K: PartialOrd + Clone,
 {
     type NodeKey<'a> = &'a (N, K) where Self: 'a, N: 'a, K: 'a;
-    type Iter<'a> = std::slice::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
+    type Iter<'a> = core::slice::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
 
     #[inline(always)]
     fn len(&self) -> usize {
