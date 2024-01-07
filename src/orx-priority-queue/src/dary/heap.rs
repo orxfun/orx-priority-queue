@@ -209,7 +209,7 @@ where
     P: HeapPositions<N>,
 {
     type NodeKey<'a> = &'a (N, K) where Self: 'a, N: 'a, K: 'a;
-    type Iter<'a> = std::slice::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
+    type Iter<'a> = core::slice::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
 
     fn len(&self) -> usize {
         self.tree.len() - offset::<D>()
