@@ -209,6 +209,21 @@
 //! You may see below two implementations one using a `PriorityQueue` and the other with a `PriorityQueueDecKey`.
 //!
 //! ```rust
+//! # type Weight = u32;
+//! # pub trait OutEdgeData {
+//! #     fn head(&self) -> usize;
+//! #     fn weight(&self) -> Weight;
+//! # }
+//! # pub trait OutEdges {
+//! #     type Edge: OutEdgeData;
+//! #     fn next_edge(&mut self) -> Option<Self::Edge>;
+//! #     fn count_edges(&mut self) -> usize;
+//! # }
+//! # pub trait Graph {
+//! #     type OutEdges<'a>: OutEdges where where Self:'a;
+//! #     fn num_nodes(&self) -> usize;
+//! #     fn out_edges(&self, node: usize) -> Self::OutEdges<'_>;
+//! # }
 //! use orx_priority_queue::*;
 //!
 //! fn run_with_basic_pq<G: Graph, Q: PriorityQueue<usize, Weight>>(
