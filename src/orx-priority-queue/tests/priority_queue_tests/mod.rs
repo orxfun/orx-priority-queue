@@ -6,6 +6,7 @@ mod peek;
 mod push_pop;
 mod push_then_pop;
 
+#[allow(unused_imports)]
 pub use as_slice::test_as_slice;
 pub use clear::test_clear;
 pub use is_empty::test_is_empty;

@@ -6,6 +6,7 @@ where
 {
     /// Returns a reference to the node.
     fn node(&self) -> &'a N;
+
     /// Returns a reference to the key/priority of the node.
     fn key(&self) -> &'a K;
 }

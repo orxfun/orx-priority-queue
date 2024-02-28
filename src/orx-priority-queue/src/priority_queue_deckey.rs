@@ -3,7 +3,7 @@ use crate::PriorityQueue;
 /// A [PriorityQueueDecKey] is a more advanced [PriorityQueue] with additional features
 /// mainly related to accessing or modifying already pushed nodes such as:
 /// * checking if a node is present in the queue,
-/// * getting the key of an alrady pushed node,
+/// * getting the key of an already pushed node,
 /// * decreasing or updating the key of an already pushed node.
 ///
 /// This is often achieved by additional memory requirement; hence, it is separated from the [PriorityQueue].
@@ -16,7 +16,7 @@ use crate::PriorityQueue;
 ///
 /// The [PriorityQueue] requires more space to handle a problem with lots of decrease key operations;
 /// [PriorityQueueDecKey] aims to be memory efficient in such situations.
-/// On the other hand, [PriorityQueue] could be preferable where number of such upadtes is limited
+/// On the other hand, [PriorityQueue] could be preferable where number of such updates is limited
 /// due to its lack of additional checks and tracking.
 pub trait PriorityQueueDecKey<N, K>: PriorityQueue<N, K>
 where
