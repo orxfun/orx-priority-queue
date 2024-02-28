@@ -27,7 +27,7 @@
 //! In addition the the following implementations are provided in this crate:
 //!
 //! * `std::collections::BinaryHeap<(N, K)>` implements `PriorityQueue<N, K>`,
-//! * `priority_queue:PriorityQueue<N, K>` impelements both `PriorityQueue<N, K>` and `PriorityQueueDecKey<N, K>`.
+//! * `priority_queue:PriorityQueue<N, K>` implements both `PriorityQueue<N, K>` and `PriorityQueueDecKey<N, K>`.
 //!
 //! This allows to use all the queue implementations interchangeably and measure performance. See <a href="#section-benchmarks">B. Benchmarks</a> section to see the experiments.
 //!

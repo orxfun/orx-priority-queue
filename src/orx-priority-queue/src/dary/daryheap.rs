@@ -9,7 +9,7 @@ pub type QuarternaryHeap<N, K> = DaryHeap<N, K, 4>;
 /// A d-ary heap which implements `PriorityQueue`, but not `PriorityQueueDecKey`.
 ///
 /// *Its interface is similar to `std::collections:BinaryHeap; however, provides a generalization by allowing different d values.
-/// `DaryHeapMap` and DaryHeapOfIndices` on the other hand, provides the additonal functionality of `PriorityQueueDecKey`
+/// `DaryHeapMap` and DaryHeapOfIndices` on the other hand, provides the additional functionality of `PriorityQueueDecKey`
 /// which are crucial for providing better space complexity in algorithms such as the Dijkstra's shortest path algorithm.*
 ///
 /// # Examples

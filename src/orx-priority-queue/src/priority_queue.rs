@@ -217,7 +217,7 @@ where
     /// let mut queue = BinaryHeap::default();
     /// assert!(queue.is_empty());
     ///
-    /// // returns the (node, key) back qhen the queue is empty
+    /// // returns the (node, key) back when the queue is empty
     /// let popped = queue.push_then_pop(3, 33.3);
     /// assert_eq!((3, 33.3), popped);
     /// assert!(queue.is_empty());
