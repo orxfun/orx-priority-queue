@@ -20,38 +20,30 @@ Three categories of d-ary heap implementations are provided.
 
 All the heap types have a constant generic parameter `D` which defines the maximum number of children of a node in the tree. Note that d-ary heap is a generalization of the binary heap for which d=2:
 * With a large d: number of per level comparisons increases while the tree depth becomes smaller.
-* With a small d: each level required fewer comparisons while the tree gets deeper.
+* With a small d: each level requires fewer comparisons while the tree gets deeper.
 
 There is no dominating variant for all use cases. Binary heap is often the preferred choice due to its simplicity of implementation. However, the d-ary implementations in this crate, taking benefit of the **const generics**, provide a generalization, making it easy to switch between the variants. The motivation is to allow for tuning the heap to the algorithms and relevant input sets for performance critical methods.
 
-### `DaryHeap<N, K, const D: usize>`
+### `DaryHeap`
 
 This is the basic d-ary heap implementing `PriorityQueue<N, K>`. It is to be the default choice unless priority updates or decrease-key operations are required.
 
-### `DaryHeapOfIndices<N, K, const D>`
+### `DaryHeapOfIndices`
 
 This is a d-ary heap paired up with a positions array and implements `PriorityQueueDecKey<N, K>`.
 
 * It requires the nodes to implement `HasIndex` trait which is nothing but `fn index(&self) -> usize`. Note that `usize`, `u64`, etc., already implements `HasIndex`.
-* Further, it requires the maximum index that is expected to enter the queue (candidates coming from a closed set).
+* Further, it requires to know the maximum index that is expected to enter the queue (candidates coming from a closed set).
 
-Once these conditions are satisfied, it performs **significantly faster** than the alternative decrease key queues. Although the closed set requirement might sound strong, it is often naturally satisfied in mathematical algorithms. For instance, for most network traversal algorithms, the candidates set is the nodes of the graph, or indices in `0..numNodes`.
+Once these conditions are satisfied, it performs **significantly faster** than the alternative decrease key queues. Although the closed set requirement might sound strong, it is often naturally satisfied in mathematical algorithms. For instance, for most network traversal algorithms, the candidates set is the nodes of the graph, or indices in `0..num_nodes`.
 
 This is the default decrease-key queue provided that the requirements are satisfied.
 
-### `DaryHeapWithMap<N, K, const D>`
+### `DaryHeapWithMap`
 
 This is a d-ary heap paired up with a positions map (`HashMap` or `BTreeMap` when no-std) and implements `PriorityQueueDecKey<N, K>`.
 
 This is the most general decrease-key queue that provides the open-set flexibility and fits to almost all cases.
-
-The following two types additionally implement `PriorityQueueDecKey<N, K>` which serve different purposes:
-
-* **`DaryHeapOfIndices<N, K, const D>`** is a d-ary heap paired up with a positions array. It requires the nodes to implement `HasIndex` trait which is nothing but `fn index(&self) -> usize`. Further, it requires the maximum index that is expected to enter the queue (candidates coming from a closed set). Once these conditions are satisfied, it performs **significantly faster** than the alternative decrease key queues.
-  * Although the closed set requirement might sound strong, it is often satisfied in mathematical algorithms. For instance, for most network traversal algorithms, the candidates set is the nodes of the graph.
-* **`DaryHeapWithMap<N, K, const D: usize>`** is a d-ary heap paired up with a positions `HashMap` (`BTreeMap` with no-std). This provides the open-set flexibility and fits better to more general cases, rather than mathematical algorithms. 
-
-All three variants of the d-ary heap implementations take complete benefit of const generics to speed up traversal on the heap when d is a power of two.
 
 ### Other Queues
 
@@ -65,9 +57,9 @@ This allows to use all the queue implementations interchangeably and measure per
 
 ### Performance & Benchmarks
 
-In scenarios in tested "src/benches", `DaryHeap` performs:
-* comparable to, slightly faster than, `std::collections::BinaryHeap` for simple queue operations; and
-* significantly faster than queues implementing PriorityQueueDecKey for decrease key operations.
+In scenarios in tested "src/benches":
+* `DaryHeap` performs slightly faster than `std::collections::BinaryHeap` for simple queue operations; and
+* `DaryHeapOfIndices` performs significantly faster than queues implementing PriorityQueueDecKey for scenarios requiring decrease key operations.
 
 See [Benchmarks](https://github.com/orxfun/orx-priority-queue/blob/main/docs/Benchmarks.md) section to see the experiments and observations.
 
@@ -157,7 +149,7 @@ test_priority_queue_deckey(QuarternaryHeapOfIndices::with_index_bound(100));
 
 You may see below two implementations one using a `PriorityQueue` and the other with a `PriorityQueueDecKey`. Please note the following:
 
-* `PriorityQueue` and `PriorityQueueDecKey` traits enable algorithm implementations for generic queue types. Therefore we are able to implement the shortest path algorithm once that works for any specific queue implementation. This allows to benchmark and tune specific queues for specific algorithms or input families.
+* `PriorityQueue` and `PriorityQueueDecKey` traits enable algorithm implementations for generic queue types. Therefore we are able to implement the shortest path algorithm once that works for any queue implementation. This allows to benchmark and tune specific queues for specific algorithms or input families.
 * The second implementation with a decrease key queue pushes a great portion of complexity, or bookkeeping, to the queue and leads to a cleaner algorithm implementation.
 
 ```rust
@@ -208,8 +200,8 @@ fn dijkstras_with_basic_pq<Q: PriorityQueue<usize, Weight>>(
             continue;
         }
 
-        let mut out_edges = graph.out_edges(node);
-        while let Some(Edge { head, weight }) = out_edges.next() {
+        let out_edges = graph.out_edges(node);
+        for Edge { head, weight } in out_edges {
             let next_cost = cost + weight;
             if next_cost < dist[*head] {
                 queue.push(*head, next_cost);
@@ -243,8 +235,8 @@ fn dijkstras_with_deckey_pq<Q: PriorityQueueDecKey<usize, Weight>>(
             return Some(cost);
         }
 
-        let mut out_edges = graph.out_edges(node);
-        while let Some(Edge { head, weight }) = out_edges.next() {
+        let out_edges = graph.out_edges(node);
+        for Edge { head, weight } in out_edges {
             if !visited[*head] {
                 queue.try_decrease_key_or_push(&head, cost + weight);
             }
@@ -254,7 +246,6 @@ fn dijkstras_with_deckey_pq<Q: PriorityQueueDecKey<usize, Weight>>(
 
     None
 }
-
 
 // TESTS: basic priority queues
 

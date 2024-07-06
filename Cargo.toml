@@ -1,6 +1,6 @@
 [package]
 name = "orx-priority-queue"
-version = "1.2.0"
+version = "1.2.1"
 edition = "2021"
 authors = ["orxfun <orx.ugur.arikan@gmail.com>"]
 description = "Priority queue traits and high performance d-ary heap implementations."
