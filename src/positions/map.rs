@@ -55,25 +55,31 @@ where
     fn clear(&mut self) {
         self.map.clear();
     }
+
     #[inline(always)]
     fn contains(&self, node: &N) -> bool {
         self.map.contains_key(node)
     }
+
     fn position_of(&self, node: &N) -> Option<usize> {
         self.map.get(node).copied()
     }
+
     fn insert(&mut self, node: &N, position: usize) {
         debug_assert!(!self.contains(node), "re-inserting already added node");
         self.map.insert(node.clone(), position);
     }
+
     fn remove(&mut self, node: &N) {
         debug_assert!(self.contains(node), "removing an absent node");
         self.map.remove(node);
     }
+
     fn update_position_of(&mut self, node: &N, position: usize) {
         *self.map.get_mut(node).expect("node must exist") = position;
     }
 
+    #[cfg(test)]
     fn is_valid<K>(&self, offset: usize, tree: &[(N, K)]) -> bool {
         if self.map.len() != tree.len() - offset {
             false

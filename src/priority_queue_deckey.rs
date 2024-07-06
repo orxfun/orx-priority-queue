@@ -88,6 +88,7 @@ where
     /// // queue.decrease_key(&7, 100.0); // due to greater new key
     /// ```
     fn decrease_key(&mut self, node: &N, decreased_key: K);
+
     /// Updates key of the `node` which is already in the queue as the given `new_key`;
     /// and returns the result of the operation:
     ///
@@ -122,6 +123,7 @@ where
     /// // queue.update_key(&10, 21.0); // due to absent node
     /// ```
     fn update_key(&mut self, node: &N, new_key: K) -> ResUpdateKey;
+
     /// Tries to decrease the key of the `node` which is already in the queue if its prior key is strictly larger than the `new_key`;
     /// otherwise, it does nothing leaving the queue unchanged.
     ///
@@ -217,6 +219,7 @@ where
             ResDecreaseKeyOrPush::Pushed
         }
     }
+
     /// If the `node` is present in the queue:
     /// * updates key of the `node` to the given `new_key`;
     ///
@@ -259,6 +262,7 @@ where
             ResUpdateKeyOrPush::Pushed
         }
     }
+
     /// If the `node` is present in the queue, tries to decrease its key to the given `key`:
     /// * its key is set to the new `key` if the prior key was strictly larger than the given key;
     /// * the queue remains unchanged if the prior key was less than or equal to the given key;
@@ -346,6 +350,7 @@ pub enum ResUpdateKey {
     /// Existing key of the `node` was lower; and hence, increased to the `new_key`.
     Increased,
 }
+
 /// Result of `queue.try_decrease_key(node, new_key)` operation : [`PriorityQueueDecKey::try_decrease_key`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResTryDecreaseKey {
@@ -354,6 +359,7 @@ pub enum ResTryDecreaseKey {
     /// Existing key of the `node` was lower; and hence, the queue is not changed.
     Unchanged,
 }
+
 /// Result of `queue.decrease_key_or_push(node, key)` operation : [`PriorityQueueDecKey::decrease_key_or_push`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResDecreaseKeyOrPush {
@@ -362,6 +368,7 @@ pub enum ResDecreaseKeyOrPush {
     /// The `node` existed in the queue, its key was higher; and hence, decreased to the given `key`.
     Decreased,
 }
+
 /// Result of `queue.update_key_or_push(node, key)` operation : [`PriorityQueueDecKey::update_key_or_push`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResUpdateKeyOrPush {
@@ -372,6 +379,7 @@ pub enum ResUpdateKeyOrPush {
     /// The `node` existed in the queue, its key was lower; and hence, increased to the given `key`.
     Increased,
 }
+
 /// Result of `queue.try_decrease_key_or_push(node, key)` operation : [`PriorityQueueDecKey::try_decrease_key_or_push`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResTryDecreaseKeyOrPush {

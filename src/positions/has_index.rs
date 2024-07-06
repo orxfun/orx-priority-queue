@@ -36,31 +36,36 @@ where
     fn clear(&mut self) {
         self.positions.iter_mut().for_each(|p| *p = NONE);
     }
+
     #[inline(always)]
     fn contains(&self, node: &N) -> bool {
         self.positions[node.index()] != NONE
     }
+
     fn position_of(&self, node: &N) -> Option<usize> {
         let position = self.positions[node.index()];
-        if position == NONE {
-            None
-        } else {
-            Some(position)
+        match position {
+            NONE => None,
+            x => Some(x),
         }
     }
+
     fn insert(&mut self, node: &N, positions: usize) {
         debug_assert!(!self.contains(node), "re-inserting already added node");
         self.positions[node.index()] = positions;
     }
+
     fn remove(&mut self, node: &N) {
         debug_assert!(self.contains(node), "removing an absent node");
         self.positions[node.index()] = NONE;
     }
+
     fn update_position_of(&mut self, node: &N, position: usize) {
         debug_assert!(self.contains(node), "updating position of an absent node");
         self.positions[node.index()] = position;
     }
 
+    #[cfg(test)]
     fn is_valid<K>(&self, offset: usize, tree: &[(N, K)]) -> bool {
         let mut count = 0;
         for (node, &pos) in self.positions.iter().enumerate() {
