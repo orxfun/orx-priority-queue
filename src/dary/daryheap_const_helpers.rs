@@ -21,6 +21,7 @@ pub(crate) unsafe fn add_offset_to_tree<N, K, const D: usize>(tree: &mut Vec<(N,
         tree.push(offset_value);
     }
 }
+
 /// when `D` = 2^k
 /// * offset = 2^k-1
 ///
@@ -37,6 +38,7 @@ pub(crate) const fn offset<const D: usize>() -> usize {
         _ => 0,
     }
 }
+
 /// Let c = `child`.
 ///
 /// when `D` = 2^k
@@ -56,6 +58,7 @@ pub(crate) const fn parent_of<const D: usize>(child: usize) -> usize {
         _ => (child - 1) / D,
     }
 }
+
 /// Let p = `parent`.
 ///
 /// when `D` = 2^k

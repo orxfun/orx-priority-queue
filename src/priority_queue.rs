@@ -37,6 +37,7 @@ where
     /// assert_eq!(1, queue.len());
     /// ```
     fn len(&self) -> usize;
+
     /// Capacity of the heap.
     fn capacity(&self) -> usize;
 
@@ -123,6 +124,7 @@ where
     /// assert_eq!(None, queue.pop());
     /// ```
     fn pop(&mut self) -> Option<(N, K)>;
+
     /// Removes and returns the node with the lowest key in the queue;
     /// returns None if the queue is empty.
     ///
@@ -151,6 +153,7 @@ where
     /// assert_eq!(None, queue.pop_node());
     /// ```
     fn pop_node(&mut self) -> Option<N>;
+
     /// Removes and returns the key of the node with the lowest key in the queue;
     /// returns None if the queue is empty.
     ///
@@ -201,13 +204,9 @@ where
     ///
     /// Since the queue cannot be empty after the push, the return type is not optional.
     ///
-    /// The reason of merging the calls is that handling two instructions at once
-    /// is more efficient for certain implementations, such as for the binary heap.
-    ///
-    /// According to benchmark defined in "benches/push_then_pop.rs",
-    /// replacing the consequent `push` and `pop` calls with a `push_then_pop` call
-    /// increases the performance by a factor 2 or 3 when the underlying struct
-    /// takes benefit of this such as the `DaryHeap` and its variants.
+    /// The reason of merging the calls is that handling two instructions at once is
+    /// significantly more efficient for implementations taking benefit of this composition.
+    /// `DaryHeap` and its variants such the `BinaryHeap` are examples to this (see "benches/push_then_pop.rs").
     ///
     /// # Examples
     ///
