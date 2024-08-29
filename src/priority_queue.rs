@@ -48,7 +48,7 @@ where
     /// ```
     /// use orx_priority_queue::*;
     ///
-    /// let mut queue = QuarternaryHeap::default();
+    /// let mut queue = QuaternaryHeap::default();
     /// assert!(queue.is_empty());
     ///
     /// queue.push("wisdom", 42);
@@ -83,7 +83,7 @@ where
     /// ```
     /// use orx_priority_queue::*;
     ///
-    /// let mut queue = QuarternaryHeap::default();
+    /// let mut queue = QuaternaryHeap::default();
     /// assert!(queue.is_empty());
     ///
     /// queue.push(0, 12.0);

@@ -114,9 +114,9 @@
 //! test_priority_queue(DaryHeapWithMap::<usize, f64, D>::default());
 //! test_priority_queue(DaryHeapOfIndices::<usize, f64, D>::with_index_bound(100));
 //!
-//! // type aliases for common heaps: Binary or Quarternary
+//! // type aliases for common heaps: Binary or Quaternary
 //! test_priority_queue(BinaryHeap::default());
-//! test_priority_queue(QuarternaryHeapWithMap::default());
+//! test_priority_queue(QuaternaryHeapWithMap::default());
 //! test_priority_queue(BinaryHeapOfIndices::with_index_bound(100));
 //! ```
 //!
@@ -163,9 +163,9 @@
 //! test_priority_queue_deckey(DaryHeapOfIndices::<usize, f64, D>::with_index_bound(100));
 //! test_priority_queue_deckey(DaryHeapWithMap::<usize, f64, D>::default());
 //!
-//! // type aliases for common heaps: Binary or Quarternary
+//! // type aliases for common heaps: Binary or Quaternary
 //! test_priority_queue_deckey(BinaryHeapOfIndices::with_index_bound(100));
-//! test_priority_queue_deckey(QuarternaryHeapWithMap::default());
+//! test_priority_queue_deckey(QuaternaryHeapWithMap::default());
 //! ```
 //!
 //! ### C.2. Usage in Dijkstra's Shortest Path
@@ -280,7 +280,7 @@
 //! assert_eq!(Some(5), dijkstras_with_basic_pq(&graph, &mut pq, 0, 3));
 //! assert_eq!(None, dijkstras_with_basic_pq(&graph, &mut pq, 3, 1));
 //!
-//! let mut pq = QuarternaryHeap::new();
+//! let mut pq = QuaternaryHeap::new();
 //! assert_eq!(Some(5), dijkstras_with_basic_pq(&graph, &mut pq, 0, 3));
 //! assert_eq!(None, dijkstras_with_basic_pq(&graph, &mut pq, 3, 1));
 //!
@@ -335,9 +335,9 @@ mod priority_queue;
 mod priority_queue_deckey;
 
 pub use crate::priority_queue::PriorityQueue;
-pub use dary::daryheap::{BinaryHeap, DaryHeap, QuarternaryHeap};
-pub use dary::daryheap_index::{BinaryHeapOfIndices, DaryHeapOfIndices, QuarternaryHeapOfIndices};
-pub use dary::daryheap_map::{BinaryHeapWithMap, DaryHeapWithMap, QuarternaryHeapWithMap};
+pub use dary::daryheap::{BinaryHeap, DaryHeap, QuaternaryHeap};
+pub use dary::daryheap_index::{BinaryHeapOfIndices, DaryHeapOfIndices, QuaternaryHeapOfIndices};
+pub use dary::daryheap_map::{BinaryHeapWithMap, DaryHeapWithMap, QuaternaryHeapWithMap};
 pub use has_index::HasIndex;
 pub use node_key_ref::NodeKeyRef;
 pub use priority_queue_deckey::{

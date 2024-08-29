@@ -4,7 +4,7 @@ use crate::{positions::none::HeapPositionsNone, PriorityQueue};
 /// Type alias for `DaryHeap<N, K, 2>`; see [`DaryHeap`] for details.
 pub type BinaryHeap<N, K> = DaryHeap<N, K, 2>;
 /// Type alias for `DaryHeap<N, K, 4>`; see [`DaryHeap`] for details.
-pub type QuarternaryHeap<N, K> = DaryHeap<N, K, 4>;
+pub type QuaternaryHeap<N, K> = DaryHeap<N, K, 4>;
 
 /// A d-ary heap which implements `PriorityQueue`, but not `PriorityQueueDecKey`.
 ///
@@ -50,10 +50,10 @@ pub type QuarternaryHeap<N, K> = DaryHeap<N, K, 4>;
 /// // using type aliases to simplify signatures
 /// test_priority_queue(BinaryHeap::default());
 /// test_priority_queue(BinaryHeap::with_capacity(16));
-/// test_priority_queue(QuarternaryHeap::default());
-/// test_priority_queue(QuarternaryHeap::with_capacity(16));
-/// test_priority_queue(QuarternaryHeap::default());
-/// test_priority_queue(QuarternaryHeap::with_capacity(16));
+/// test_priority_queue(QuaternaryHeap::default());
+/// test_priority_queue(QuaternaryHeap::with_capacity(16));
+/// test_priority_queue(QuaternaryHeap::default());
+/// test_priority_queue(QuaternaryHeap::with_capacity(16));
 /// ```
 #[derive(Clone, Debug)]
 pub struct DaryHeap<N, K, const D: usize = 2>
@@ -133,7 +133,7 @@ where
     /// ```
     /// use orx_priority_queue::*;
     ///
-    /// let mut queue = QuarternaryHeapWithMap::default();
+    /// let mut queue = QuaternaryHeapWithMap::default();
     /// queue.push("x", 42);
     /// queue.push("y", 7);
     /// queue.push("z", 99);

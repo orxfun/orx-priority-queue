@@ -194,7 +194,7 @@ where
     /// ```
     /// use orx_priority_queue::*;
     ///
-    /// let mut queue = QuarternaryHeapWithMap::default();
+    /// let mut queue = QuaternaryHeapWithMap::default();
     /// queue.push("x", 42);
     /// queue.push("y", 7);
     /// queue.push("z", 99);
