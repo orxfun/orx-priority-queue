@@ -41,9 +41,9 @@ where
     #[allow(unused)]
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
-            #[cfg(not(std))]
+            #[cfg(not(feature = "std"))]
             map: Map::new(),
-            #[cfg(std)]
+            #[cfg(feature = "std")]
             map: Map::with_capacity(capacity),
         }
     }

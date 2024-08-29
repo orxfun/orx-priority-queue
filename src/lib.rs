@@ -16,32 +16,32 @@
 //!
 //! ## B. d-ary Heap Implementations
 //!
-//! Three categories of d-ary heap implementations are provided.
-//!
-//! All the heap types have a constant generic parameter `D` which defines the maximum number of children of a node in the tree. Note that d-ary heap is a generalization of the binary heap for which d=2:
+//! d-ary implementations are generalizations of the binary heap; i.e., binary heap is a special case where `D=2`. It is advantageous to have a parametrized d; as for instance, in the benchmarks defined here, `D=4` outperforms `D=2`.
 //! * With a large d: number of per level comparisons increases while the tree depth becomes smaller.
-//! * With a small d: each level requires fewer comparisons while the tree gets deeper.
+//! * With a small d: each level requires fewer comparisons while the tree with the same number of nodes is deeper.
 //!
-//! There is no dominating variant for all use cases. Binary heap is often the preferred choice due to its simplicity of implementation. However, the d-ary implementations in this crate, taking benefit of the **const generics**, provide a generalization, making it easy to switch between the variants. The motivation is to allow for tuning the heap to the algorithms and relevant input sets for performance critical methods.
+//! Further, three categories of d-ary heap implementations are introduced.
 //!
-//! ### `DaryHeap`
+//! ### 1. DaryHeap (PriorityQueue)
 //!
-//! This is the basic d-ary heap implementing `PriorityQueue<N, K>`. It is to be the default choice unless priority updates or decrease-key operations are required.
+//! This is the basic d-ary heap implementing `PriorityQueue`. It is the default choice unless priority updates or decrease-key operations are required.
 //!
-//! ### `DaryHeapOfIndices`
+//! ### 2. DaryHeapOfIndices (PriorityQueue + PriorityQueueDecKey)
 //!
-//! This is a d-ary heap paired up with a positions array and implements `PriorityQueueDecKey<N, K>`.
+//! This is a d-ary heap paired up with a positions array and implements `PriorityQueueDecKey`.
 //!
 //! * It requires the nodes to implement `HasIndex` trait which is nothing but `fn index(&self) -> usize`. Note that `usize`, `u64`, etc., already implements `HasIndex`.
-//! * Further, it requires to know the maximum index that is expected to enter the queue (candidates coming from a closed set).
+//! * Further, it requires to know the maximum index that is expected to enter the queue. In other words, candidates are expected to come from a closed set.
 //!
-//! Once these conditions are satisfied, it performs **significantly faster** than the alternative decrease key queues. Although the closed set requirement might sound strong, it is often naturally satisfied in mathematical algorithms. For instance, for most network traversal algorithms, the candidates set is the nodes of the graph, or indices in `0..num_nodes`.
+//! Once these conditions are satisfied, it **performs significantly faster** than the alternative decrease key queues.
+//!
+//! Although the closed set requirement might sound strong, it is often naturally satisfied in mathematical algorithms. For instance, for most network traversal algorithms, the candidates set is the nodes of the graph, or indices in `0..num_nodes`. Similarly, if the heap is used to be used for sorting elements of a list, indices are simply coming from `0..list_len`.
 //!
 //! This is the default decrease-key queue provided that the requirements are satisfied.
 //!
-//! ### `DaryHeapWithMap`
+//! ### 3. DaryHeapWithMap (PriorityQueue + PriorityQueueDecKey)
 //!
-//! This is a d-ary heap paired up with a positions map (`HashMap` or `BTreeMap` when no-std) and implements `PriorityQueueDecKey<N, K>`.
+//! This is a d-ary heap paired up with a positions map (`HashMap` or `BTreeMap` when no-std) and also implements `PriorityQueueDecKey`.
 //!
 //! This is the most general decrease-key queue that provides the open-set flexibility and fits to almost all cases.
 //!
@@ -53,19 +53,31 @@
 //! * `priority_queue:PriorityQueue<N, K>` implements both `PriorityQueue<N, K>` and `PriorityQueueDecKey<N, K>`
 //!   * requires `--features impl_priority_queue`
 //!
-//! This allows to use all the queue implementations interchangeably and measure performance.
+//! This allows to use all the queue implementations interchangeably and pick the one fitting best to the use case.
 //!
 //! ### Performance & Benchmarks
 //!
-//! In scenarios in tested "src/benches":
-//! * `DaryHeap` performs slightly faster than `std::collections::BinaryHeap` for simple queue operations; and
-//! * `DaryHeapOfIndices` performs significantly faster than queues implementing PriorityQueueDecKey for scenarios requiring decrease key operations.
+//! *You may find the details of the benchmarks at [benches](https://github.com/orxfun/orx-priority-queue/blob/main/benches) folder.*
 //!
-//! See [Benchmarks](https://github.com/orxfun/orx-priority-queue/blob/main/docs/Benchmarks.md) section to see the experiments and observations.
+//! <img src="https://raw.githubusercontent.com/orxfun/orx-priority-queue/main/docs/bench_results.PNG" alt="https://raw.githubusercontent.com/orxfun/orx-priority-queue/main/docs/bench_results.PNG" />
+//!
+//! The table above summarizes the benchmark results of basic operations on basic queues, and queues allowing decrease key operations.
+//!
+//! * In the first benchmark, we repeatedly call `push` and `pop` operations on a queue while maintaining an average length of 100000:
+//!   * We observe that `BinaryHeap` (`DaryHeap<_, _, 2>`) performs almost the same as the standard binary heap.
+//!   * Experiments on different values of d shows that `QuaternaryHeap` (D=4) outperforms both binary heaps.
+//!   * Further increasing D to 8 does not improve performance.
+//!   * Finally, we repeat the experiments with `BinaryHeap` and `QuaternaryHeap` using the specialized [`push_then_pop`](https://docs.rs/orx-priority-queue/latest/orx_priority_queue/trait.PriorityQueue.html#tymethod.push_then_pop) operation. Note that this operation further doubles the performance, and hence, should be used whenever it fits the use case.
+//! * In the second benchmark, we add [`decrease_key_or_push`](https://docs.rs/orx-priority-queue/latest/orx_priority_queue/trait.PriorityQueueDecKey.html#method.decrease_key_or_push) calls to the operations. Standard binary heap is excluded since it cannot implement `PriorityQueueDecKey`.
+//!   * We observe that `DaryHeapOfIndices` significantly outperforms other decrease key queues.
+//!   * Among `BinaryHeapOfIndices` and `QuaternaryHeapOfIndices`, the latter with D=4 again performs better.
+//!
 //!
 //! ## C. Examples
 //!
 //! ### C.1. Basic Usage
+//!
+//! Below example demonstrates basic usage of a simple `PriorityQueue`. You may see the entire functionalities [here](https://docs.rs/orx-priority-queue/latest/orx_priority_queue/trait.PriorityQueue.html).
 //!
 //! ```rust
 //! use orx_priority_queue::*;
@@ -94,6 +106,24 @@
 //!         println!("pop {:?}", popped);
 //!     }
 //! }
+//!
+//! // d-ary heap generic over const d
+//! const D: usize = 4;
+//!
+//! test_priority_queue(DaryHeap::<usize, f64, D>::default());
+//! test_priority_queue(DaryHeapWithMap::<usize, f64, D>::default());
+//! test_priority_queue(DaryHeapOfIndices::<usize, f64, D>::with_index_bound(100));
+//!
+//! // type aliases for common heaps: Binary or Quarternary
+//! test_priority_queue(BinaryHeap::default());
+//! test_priority_queue(QuarternaryHeapWithMap::default());
+//! test_priority_queue(BinaryHeapOfIndices::with_index_bound(100));
+//! ```
+//!
+//! As mentioned, `PriorityQueueDecKey` extends capabilities of a `PriorityQueue`. You may see the additional functionalities [here](https://docs.rs/orx-priority-queue/latest/orx_priority_queue/trait.PriorityQueueDecKey.html).
+//!
+//! ```rust
+//! use orx_priority_queue::*;
 //!
 //! // generic over decrease-key priority queues
 //! fn test_priority_queue_deckey<P>(mut pq: P)
@@ -130,38 +160,27 @@
 //! // d-ary heap generic over const d
 //! const D: usize = 4;
 //!
-//! test_priority_queue(DaryHeap::<usize, f64, D>::default());
-//! test_priority_queue(DaryHeapWithMap::<usize, f64, D>::default());
-//! test_priority_queue(DaryHeapOfIndices::<usize, f64, D>::with_index_bound(100));
-//!
-//! test_priority_queue_deckey(DaryHeapWithMap::<usize, f64, D>::default());
 //! test_priority_queue_deckey(DaryHeapOfIndices::<usize, f64, D>::with_index_bound(100));
+//! test_priority_queue_deckey(DaryHeapWithMap::<usize, f64, D>::default());
 //!
-//! // or type aliases for common heaps to simplify signature
-//! // Binary or Quarternary to fix d of d-ary
-//! test_priority_queue(BinaryHeap::default());
-//! test_priority_queue(BinaryHeapWithMap::default());
-//! test_priority_queue(BinaryHeapOfIndices::with_index_bound(100));
-//! test_priority_queue_deckey(QuarternaryHeapOfIndices::with_index_bound(100));
+//! // type aliases for common heaps: Binary or Quarternary
+//! test_priority_queue_deckey(BinaryHeapOfIndices::with_index_bound(100));
+//! test_priority_queue_deckey(QuarternaryHeapWithMap::default());
 //! ```
 //!
 //! ### C.2. Usage in Dijkstra's Shortest Path
 //!
-//! You may see below two implementations one using a `PriorityQueue` and the other with a `PriorityQueueDecKey`. Please note the following:
+//! You may see below two implementations of the Dijkstra's shortest path algorithm: one using a `PriorityQueue` and the other with a `PriorityQueueDecKey`. Please note the following:
 //!
-//! * `PriorityQueue` and `PriorityQueueDecKey` traits enable algorithm implementations for generic queue types. Therefore we are able to implement the shortest path algorithm once that works for any queue implementation. This allows to benchmark and tune specific queues for specific algorithms or input families.
-//! * The second implementation with a decrease key queue pushes a great portion of complexity, or bookkeeping, to the queue and leads to a cleaner algorithm implementation.
+//! * Priority queue traits allow us to be generic over queues. Therefore, we are able to implement the algorithm once that works for any queue implementation.
+//! * The second implementation with a decrease key queue pushes some of the bookkeeping to the queue, and arguably leads to a cleaner algorithm implementation.
 //!
 //! ```rust
 //! use orx_priority_queue::*;
 //!
-//! // Some additional types to set up the example
-//!
-//! type Weight = u32;
-//!
 //! pub struct Edge {
 //!     head: usize,
-//!     weight: Weight,
+//!     weight: u32,
 //! }
 //!
 //! pub struct Graph(Vec<Vec<Edge>>);
@@ -178,17 +197,15 @@
 //!
 //! // Implementation using a PriorityQueue
 //!
-//! fn dijkstras_with_basic_pq<Q: PriorityQueue<usize, Weight>>(
+//! fn dijkstras_with_basic_pq<Q: PriorityQueue<usize, u32>>(
 //!     graph: &Graph,
 //!     queue: &mut Q,
 //!     source: usize,
 //!     sink: usize,
-//! ) -> Option<Weight> {
-//!     // reset
-//!     queue.clear();
-//!     let mut dist = vec![Weight::MAX; graph.num_nodes()];
-//!
+//! ) -> Option<u32> {
 //!     // init
+//!     queue.clear();
+//!     let mut dist = vec![u32::MAX; graph.num_nodes()];
 //!     dist[source] = 0;
 //!     queue.push(source, 0);
 //!
@@ -215,13 +232,13 @@
 //!
 //! // Implementation using a PriorityQueueDecKey
 //!
-//! fn dijkstras_with_deckey_pq<Q: PriorityQueueDecKey<usize, Weight>>(
+//! fn dijkstras_with_deckey_pq<Q: PriorityQueueDecKey<usize, u32>>(
 //!     graph: &Graph,
 //!     queue: &mut Q,
 //!     source: usize,
 //!     sink: usize,
-//! ) -> Option<Weight> {
-//!     // reset
+//! ) -> Option<u32> {
+//!     // init
 //!     queue.clear();
 //!     let mut visited = vec![false; graph.num_nodes()];
 //!
@@ -247,15 +264,17 @@
 //!     None
 //! }
 //!
-//! // TESTS: basic priority queues
+//! // example input
 //!
-//! let e = |head: usize, weight: Weight| Edge { head, weight };
+//! let e = |head: usize, weight: u32| Edge { head, weight };
 //! let graph = Graph(vec![
 //!     vec![e(1, 4), e(2, 5)],
 //!     vec![e(0, 3), e(2, 6), e(3, 1)],
 //!     vec![e(1, 3), e(3, 9)],
 //!     vec![],
 //! ]);
+//!
+//! // TESTS: basic priority queues
 //!
 //! let mut pq = BinaryHeap::new();
 //! assert_eq!(Some(5), dijkstras_with_basic_pq(&graph, &mut pq, 0, 3));

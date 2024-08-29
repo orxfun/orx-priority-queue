@@ -72,7 +72,7 @@ fn run_on_dary_heap<const D: usize>(
     data: &TestData,
 ) {
     group.bench_with_input(
-        BenchmarkId::new(format!("orx_priority_queue::DaryHeap<_, _, {}>", D), n),
+        BenchmarkId::new(format!("DaryHeap<_, _, {}>", D), n),
         &n,
         |b, _| {
             b.iter(|| {
@@ -83,7 +83,7 @@ fn run_on_dary_heap<const D: usize>(
     );
 }
 fn bench_basic_queue(c: &mut Criterion) {
-    let treatments = vec![1_000, 10_000, 100_000];
+    let treatments = vec![100_000];
 
     let mut group = c.benchmark_group("basic_queue");
 

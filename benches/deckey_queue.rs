@@ -85,10 +85,7 @@ fn run_on_dary_heap_of_indices<const D: usize>(
     data: &TestData,
 ) {
     group.bench_with_input(
-        BenchmarkId::new(
-            format!("orx_priority_queue::DaryHeapOfIndices<_, _, {}>", D),
-            n,
-        ),
+        BenchmarkId::new(format!("DaryHeapOfIndices<_, _, {}>", D), n),
         &n,
         |b, _| {
             b.iter(|| {
@@ -104,10 +101,7 @@ fn run_on_dary_heap_with_map<const D: usize>(
     data: &TestData,
 ) {
     group.bench_with_input(
-        BenchmarkId::new(
-            format!("orx_priority_queue::DaryHeapWithMap<_, _, {}>", D),
-            n,
-        ),
+        BenchmarkId::new(format!("DaryHeapWithMap<_, _, {}>", D), n),
         &n,
         |b, _| {
             b.iter(|| {
