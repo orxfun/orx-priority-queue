@@ -74,7 +74,7 @@ fn run_on_dary_heap<const D: usize>(
     data: &TestData,
 ) {
     group.bench_with_input(
-        BenchmarkId::new(format!("orx_priority_queue::DaryHeap<_, _, {}>", D), n),
+        BenchmarkId::new(format!("DaryHeap<_, _, {}>", D), n),
         &n,
         |b, _| {
             b.iter(|| {
@@ -103,6 +103,7 @@ fn bench_push_then_pop(c: &mut Criterion) {
             },
         );
 
+        run_on_dary_heap::<2>(&mut group, *n, &data);
         run_on_dary_heap::<4>(&mut group, *n, &data);
 
         #[cfg(feature = "impl_priority_queue")]

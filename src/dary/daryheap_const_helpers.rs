@@ -1,27 +1,3 @@
-use alloc::vec;
-use alloc::vec::Vec;
-use core::mem::MaybeUninit;
-
-pub(crate) fn init_tree<N, K>(capacity: Option<usize>) -> Vec<(N, K)> {
-    match capacity {
-        Some(c) => Vec::with_capacity(c),
-        None => vec![],
-    }
-}
-
-/// # SAFETY
-/// In order to avoid certain arithmetic operations, the first offset number of entries of the tree are skipped.
-/// `tree` is a private field and none of the methods access the element at 0; hence, the offset will never be read.
-/// The tree is kept private and the offset entries are never accessed.
-pub(crate) unsafe fn add_offset_to_tree<N, K, const D: usize>(tree: &mut Vec<(N, K)>) {
-    let offset = offset::<D>();
-    for _ in 0..offset {
-        let uninit_offset = MaybeUninit::<(N, K)>::uninit();
-        let offset_value = uninit_offset.assume_init();
-        tree.push(offset_value);
-    }
-}
-
 /// when `D` = 2^k
 /// * offset = 2^k-1
 ///
