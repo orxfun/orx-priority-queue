@@ -114,9 +114,9 @@ test_priority_queue(DaryHeap::<usize, f64, D>::default());
 test_priority_queue(DaryHeapWithMap::<usize, f64, D>::default());
 test_priority_queue(DaryHeapOfIndices::<usize, f64, D>::with_index_bound(100));
 
-// type aliases for common heaps: Binary or Quarternary
+// type aliases for common heaps: Binary or Quaternary
 test_priority_queue(BinaryHeap::default());
-test_priority_queue(QuarternaryHeapWithMap::default());
+test_priority_queue(QuaternaryHeapWithMap::default());
 test_priority_queue(BinaryHeapOfIndices::with_index_bound(100));
 ```
 
@@ -163,9 +163,9 @@ const D: usize = 4;
 test_priority_queue_deckey(DaryHeapOfIndices::<usize, f64, D>::with_index_bound(100));
 test_priority_queue_deckey(DaryHeapWithMap::<usize, f64, D>::default());
 
-// type aliases for common heaps: Binary or Quarternary
+// type aliases for common heaps: Binary or Quaternary
 test_priority_queue_deckey(BinaryHeapOfIndices::with_index_bound(100));
-test_priority_queue_deckey(QuarternaryHeapWithMap::default());
+test_priority_queue_deckey(QuaternaryHeapWithMap::default());
 ```
 
 ### C.2. Usage in Dijkstra's Shortest Path
@@ -280,7 +280,7 @@ let mut pq = BinaryHeap::new();
 assert_eq!(Some(5), dijkstras_with_basic_pq(&graph, &mut pq, 0, 3));
 assert_eq!(None, dijkstras_with_basic_pq(&graph, &mut pq, 3, 1));
 
-let mut pq = QuarternaryHeap::new();
+let mut pq = QuaternaryHeap::new();
 assert_eq!(Some(5), dijkstras_with_basic_pq(&graph, &mut pq, 0, 3));
 assert_eq!(None, dijkstras_with_basic_pq(&graph, &mut pq, 3, 1));
 

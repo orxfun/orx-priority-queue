@@ -7,7 +7,7 @@ use crate::{
 /// Type alias for `DaryHeapWithMap<N, K, 2>`; see [`DaryHeapWithMap`] for details.
 pub type BinaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 2>;
 /// Type alias for `DaryHeapWithMap<N, K, 4>`; see [`DaryHeapWithMap`] for details.
-pub type QuarternaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 4>;
+pub type QuaternaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 4>;
 
 /// A d-ary heap which implements both `PriorityQueue` and `PriorityQueueDecKey`.
 ///
@@ -66,10 +66,10 @@ pub type QuarternaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 4>;
 /// // using type aliases to simplify signatures
 /// test_priority_queue(BinaryHeapWithMap::default());
 /// test_priority_queue(BinaryHeapWithMap::with_capacity(16));
-/// test_priority_queue(QuarternaryHeapWithMap::default());
-/// test_priority_queue(QuarternaryHeapWithMap::with_capacity(16));
-/// test_priority_queue(QuarternaryHeapWithMap::default());
-/// test_priority_queue(QuarternaryHeapWithMap::with_capacity(16));
+/// test_priority_queue(QuaternaryHeapWithMap::default());
+/// test_priority_queue(QuaternaryHeapWithMap::with_capacity(16));
+/// test_priority_queue(QuaternaryHeapWithMap::default());
+/// test_priority_queue(QuaternaryHeapWithMap::with_capacity(16));
 /// ```
 ///
 /// ## Heap as a `PriorityQueueDecKey`
@@ -114,10 +114,10 @@ pub type QuarternaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 4>;
 /// // using type aliases to simplify signatures
 /// test_priority_queue_deckey(BinaryHeapWithMap::default());
 /// test_priority_queue_deckey(BinaryHeapWithMap::with_capacity(16));
-/// test_priority_queue_deckey(QuarternaryHeapWithMap::default());
-/// test_priority_queue_deckey(QuarternaryHeapWithMap::with_capacity(16));
-/// test_priority_queue_deckey(QuarternaryHeapWithMap::default());
-/// test_priority_queue_deckey(QuarternaryHeapWithMap::with_capacity(16));
+/// test_priority_queue_deckey(QuaternaryHeapWithMap::default());
+/// test_priority_queue_deckey(QuaternaryHeapWithMap::with_capacity(16));
+/// test_priority_queue_deckey(QuaternaryHeapWithMap::default());
+/// test_priority_queue_deckey(QuaternaryHeapWithMap::with_capacity(16));
 /// ```
 #[derive(Debug, Clone)]
 pub struct DaryHeapWithMap<N, K, const D: usize = 2>
@@ -185,7 +185,7 @@ where
     /// ```
     /// use orx_priority_queue::*;
     ///
-    /// let mut queue = QuarternaryHeapWithMap::default();
+    /// let mut queue = QuaternaryHeapWithMap::default();
     /// queue.push("x", 42);
     /// queue.push("y", 7);
     /// queue.push("z", 99);

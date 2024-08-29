@@ -7,7 +7,7 @@ use crate::{
 /// Type alias for `DaryHeapOfIndices<N, K, 2>`; see [`DaryHeapOfIndices`] for details.
 pub type BinaryHeapOfIndices<N, K> = DaryHeapOfIndices<N, K, 2>;
 /// Type alias for `DaryHeapOfIndices<N, K, 4>`; see [`DaryHeapOfIndices`] for details.
-pub type QuarternaryHeapOfIndices<N, K> = DaryHeapOfIndices<N, K, 4>;
+pub type QuaternaryHeapOfIndices<N, K> = DaryHeapOfIndices<N, K, 4>;
 
 /// A d-ary heap which implements both `PriorityQueue` and `PriorityQueueDecKey`.
 ///
@@ -86,8 +86,8 @@ pub type QuarternaryHeapOfIndices<N, K> = DaryHeapOfIndices<N, K, 4>;
 /// test_priority_queue(DaryHeapOfIndices::<_, _, 4>::with_index_bound(32));
 /// // using type aliases to simplify signatures
 /// test_priority_queue(BinaryHeapOfIndices::with_index_bound(16));
-/// test_priority_queue(QuarternaryHeapOfIndices::with_index_bound(16));
-/// test_priority_queue(QuarternaryHeapOfIndices::with_index_bound(16));
+/// test_priority_queue(QuaternaryHeapOfIndices::with_index_bound(16));
+/// test_priority_queue(QuaternaryHeapOfIndices::with_index_bound(16));
 /// ```
 ///
 /// ## Heap as a `PriorityQueueDecKey`
@@ -130,8 +130,8 @@ pub type QuarternaryHeapOfIndices<N, K> = DaryHeapOfIndices<N, K, 4>;
 /// test_priority_queue_deckey(DaryHeapOfIndices::<_, _, 3>::with_index_bound(32));
 /// // using type aliases to simplify signatures
 /// test_priority_queue_deckey(BinaryHeapOfIndices::with_index_bound(16));
-/// test_priority_queue_deckey(QuarternaryHeapOfIndices::with_index_bound(16));
-/// test_priority_queue_deckey(QuarternaryHeapOfIndices::with_index_bound(16));
+/// test_priority_queue_deckey(QuaternaryHeapOfIndices::with_index_bound(16));
+/// test_priority_queue_deckey(QuaternaryHeapOfIndices::with_index_bound(16));
 /// ```
 #[derive(Clone, Debug)]
 pub struct DaryHeapOfIndices<N, K, const D: usize = 2>
@@ -205,7 +205,7 @@ where
     /// ```
     /// use orx_priority_queue::*;
     ///
-    /// let mut queue = QuarternaryHeapWithMap::default();
+    /// let mut queue = QuaternaryHeapWithMap::default();
     /// queue.push("x", 42);
     /// queue.push("y", 7);
     /// queue.push("z", 99);
