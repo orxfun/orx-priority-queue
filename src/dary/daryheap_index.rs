@@ -26,10 +26,10 @@ pub type QuaternaryHeapOfIndices<N, K> = DaryHeapOfIndices<N, K, 4>;
 /// due to the following:
 /// * using a fixed size array could be considered as a fast `HashMap`.
 /// * we often reuse such heaps many times to solve many problems on the same network,
-/// compensating for the allocation of the positions array once.
+///   compensating for the allocation of the positions array once.
 /// * further, compared to a basic priority queue (or to `std::collections::BinaryHeap`),
-/// it reduces the space complexity of the Dijkstra's
-/// algorithm from *O(N^2)* to *O(N)* by enabling the `decrease_key` operation.
+///   it reduces the space complexity of the Dijkstra's
+///   algorithm from *O(N^2)* to *O(N)* by enabling the `decrease_key` operation.
 ///
 /// However, for situations where
 /// * the number of nodes entering the queue is very sparse compared to the size of the set of nodes, or
@@ -227,8 +227,18 @@ where
     N: HasIndex,
     K: PartialOrd + Clone,
 {
-    type NodeKey<'a> = &'a (N, K) where Self: 'a, N: 'a, K: 'a;
-    type Iter<'a> = core::slice::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
+    type NodeKey<'a>
+        = &'a (N, K)
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
+    type Iter<'a>
+        = core::slice::Iter<'a, (N, K)>
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
 
     #[inline(always)]
     fn len(&self) -> usize {

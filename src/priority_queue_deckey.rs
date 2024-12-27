@@ -64,11 +64,12 @@ where
     /// # Panics
     /// This method panics:
     /// * if the `node` is not in the queue; or
-    ///     * see [`PriorityQueueDecKey::try_decrease_key_or_push`] for a variant which pushes the
-    /// `(node, new_key)` pair if the `node` is absent, rather than panicking;
-    /// * if `decreased_key` is strictly larger than key of the `node` in the queue,
-    ///     * see [`PriorityQueueDecKey::try_decrease_key`] for a variant which does nothing
-    /// if the new key is strictly larger than key of the `node` in the queue, rather than panicking.
+    ///   (see also [`try_decrease_key_or_push`])
+    /// * if `decreased_key` is strictly larger than key of the `node` in the queue
+    ///   (see also [`try_decrease_key`]).
+    ///
+    /// [`try_decrease_key_or_push`]: PriorityQueueDecKey::try_decrease_key_or_push
+    /// [`try_decrease_key`]: PriorityQueueDecKey::try_decrease_key
     ///
     /// # Examples
     ///
@@ -97,9 +98,9 @@ where
     ///
     /// # Panics
     /// This method panics if:
-    /// * the `node` is not in the queue,
-    ///     * see [`PriorityQueueDecKey::update_key_or_push`] for a variant which pushes the
-    /// `(node, new_key)` pair if the `node` is absent, rather than panicking.
+    /// * the `node` is not in the queue (see also [`update_key_or_push`]).
+    ///
+    /// [`update_key_or_push`]: PriorityQueueDecKey::update_key_or_push
     ///
     /// # Examples
     ///
@@ -170,7 +171,7 @@ where
 
     /// If the `node` is present in the queue:
     /// * decreases key of the `node` to the given `decreased_key`; `decreased_key` is expected to be less than or equal
-    /// to the prior key;
+    ///   to the prior key;
     ///
     /// otherwise:
     /// * pushes the new (node, key) pair to the queue.
@@ -182,11 +183,11 @@ where
     ///
     /// # Panics
     /// This method panics
-    /// * if the `node` is in the queue; however, its current key is strictly less than the provided `key`;
-    ///     * see [`PriorityQueueDecKey::update_key_or_push`] for a variant which increases the key
-    /// if the new key is strictly larger than key of the `node` in the queue, rather than panicking; or
-    ///     * see [`PriorityQueueDecKey::try_decrease_key_or_push`] for a variant which does nothing
-    /// if the new key is strictly larger than key of the `node` in the queue, rather than panicking.
+    /// * if the `node` is in the queue; however, its current key is strictly less than the provided `key`
+    ///   (see also [`update_key_or_push`] and [`try_decrease_key_or_push`]).
+    ///
+    /// [`update_key_or_push`]: PriorityQueueDecKey::update_key_or_push
+    /// [`try_decrease_key_or_push`]: PriorityQueueDecKey::try_decrease_key_or_push
     ///
     /// # Examples
     ///
