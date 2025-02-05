@@ -287,6 +287,7 @@ where
         self.as_slice().iter()
     }
 }
+
 impl<N, K, const D: usize> PriorityQueueDecKey<N, K> for DaryHeapOfIndices<N, K, D>
 where
     N: HasIndex,
