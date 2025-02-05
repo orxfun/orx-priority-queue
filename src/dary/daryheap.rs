@@ -155,8 +155,18 @@ where
     N: Clone,
     K: PartialOrd + Clone,
 {
-    type NodeKey<'a> = &'a (N, K) where Self: 'a, N: 'a, K: 'a;
-    type Iter<'a> = core::slice::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
+    type NodeKey<'a>
+        = &'a (N, K)
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
+    type Iter<'a>
+        = core::slice::Iter<'a, (N, K)>
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
 
     #[inline(always)]
     fn len(&self) -> usize {
