@@ -147,6 +147,14 @@ where
     N: HasIndex,
     K: PartialOrd + Clone,
 {
+    pub(super) fn heap(&self) -> &Heap<N, K, HeapPositionsHasIndex<N>, D> {
+        &self.heap
+    }
+
+    pub(super) fn into_heap(self) -> Heap<N, K, HeapPositionsHasIndex<N>, D> {
+        self.heap
+    }
+
     /// As explained in [`DaryHeapOfIndices`],
     /// this heap is useful when the nodes come from a closed set with a known size.
     /// Therefore, the heap has a strict exclusive upper bound on the index of a node which can enter the heap,

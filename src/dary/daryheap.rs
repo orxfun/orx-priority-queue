@@ -80,6 +80,14 @@ where
     N: Clone,
     K: PartialOrd + Clone,
 {
+    pub(super) fn heap(&self) -> &Heap<N, K, HeapPositionsNone, D> {
+        &self.heap
+    }
+
+    pub(super) fn into_heap(self) -> Heap<N, K, HeapPositionsNone, D> {
+        self.heap
+    }
+
     /// Creates a new empty d-ary heap.
     ///
     ///  # Examples

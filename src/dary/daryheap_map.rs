@@ -144,6 +144,14 @@ where
     N: Index,
     K: PartialOrd + Clone,
 {
+    pub(super) fn heap(&self) -> &Heap<N, K, HeapPositionsMap<N>, D> {
+        &self.heap
+    }
+
+    pub(super) fn into_heap(self) -> Heap<N, K, HeapPositionsMap<N>, D> {
+        self.heap
+    }
+
     /// Creates a new empty d-ary heap.
     ///
     ///  # Examples
@@ -207,8 +215,18 @@ where
     N: Index,
     K: PartialOrd + Clone,
 {
-    type NodeKey<'a> = &'a (N, K) where Self: 'a, N: 'a, K: 'a;
-    type Iter<'a> = core::slice::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
+    type NodeKey<'a>
+        = &'a (N, K)
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
+    type Iter<'a>
+        = core::slice::Iter<'a, (N, K)>
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
 
     #[inline(always)]
     fn len(&self) -> usize {

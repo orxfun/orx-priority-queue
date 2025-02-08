@@ -22,6 +22,14 @@ where
     K: PartialOrd + Clone,
     P: HeapPositions<N>,
 {
+    pub(super) fn tree(&self) -> &[(N, K)] {
+        &self.tree
+    }
+
+    pub(super) fn into_tree(self) -> Vec<(N, K)> {
+        self.tree
+    }
+
     pub fn new(capacity: Option<usize>, positions: P) -> Self {
         let tree = match capacity {
             Some(c) => Vec::with_capacity(c + offset::<D>()),
