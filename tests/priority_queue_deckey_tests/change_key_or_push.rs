@@ -18,13 +18,13 @@ where
     pq.clear();
     assert!(pq.is_empty());
 
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     let mut vec = (0..100).map(|_| None).collect_vec();
 
     // push 100
     for (node, vec_elem) in vec.iter_mut().enumerate() {
         if push_at_first_pass(node) {
-            let priority = rng.gen();
+            let priority = rng.random();
             pq.push(node, priority);
             *vec_elem = Some(priority);
         }
@@ -32,11 +32,11 @@ where
 
     // change keys or push 300 times
     for _ in 0..300 {
-        let node = rng.gen_range(0..100);
+        let node = rng.random_range(0..100);
         let old_key = vec[node];
         assert_eq!(old_key, pq.key_of(&node));
 
-        let new_key = rng.gen::<f64>()
+        let new_key = rng.random::<f64>()
             * match change_key {
                 ChangeKeyMethod::Decrease => old_key.unwrap_or(1.0),
                 _ => 1.0,
@@ -48,10 +48,10 @@ where
                 vec[node] = Some(new_key);
             }
             ChangeKeyMethod::Update => {
-                let res_updkey_push = pq.update_key_or_push(&node, new_key);
+                let res_update_key_push = pq.update_key_or_push(&node, new_key);
                 assert_eq!(
                     old_key.map(|old_key| new_key < old_key).unwrap_or(false),
-                    matches!(res_updkey_push, ResUpdateKeyOrPush::Decreased)
+                    matches!(res_update_key_push, ResUpdateKeyOrPush::Decreased)
                 );
                 vec[node] = Some(new_key);
             }

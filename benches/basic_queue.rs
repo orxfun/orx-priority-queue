@@ -16,12 +16,12 @@ impl TestData {
 
         let mut first_push = Vec::new();
         for node in 0..n_first {
-            first_push.push((node, rng.gen()));
+            first_push.push((node, rng.random()));
         }
 
         let mut second_push = Vec::new();
         for node in n_first..(n_first + n_second) {
-            second_push.push((node, rng.gen()));
+            second_push.push((node, rng.random()));
         }
 
         Self {

@@ -49,16 +49,16 @@ where
     pq.clear();
     assert!(pq.is_empty());
 
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     for node in 0..N {
-        let priority = rng.gen();
+        let priority = rng.random();
         pq.push(node, priority);
     }
     let mut pq_pll = pq.clone();
 
     // push & pull randomly
     for node in N..2 * N {
-        let key = rng.gen();
+        let key = rng.random();
 
         pq_pll.push(node, key);
         let popped_pll = pq_pll.pop().unwrap();

@@ -41,7 +41,7 @@ pub fn test_push_pop_randomized<P>(mut pq: P)
 where
     P: PriorityQueue<usize, f64>,
 {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     pq.clear();
     assert!(pq.is_empty());
@@ -50,7 +50,7 @@ where
 
     // push 100 -> 0, ..., 99
     for node in 0..100 {
-        let priority = rng.gen();
+        let priority = rng.random();
         pq.push(node, priority);
         vec.push((node, priority));
     }
@@ -78,7 +78,7 @@ where
 
     // push 25 -> 100, ..., 124
     for node in 100..125 {
-        let priority = rng.gen();
+        let priority = rng.random();
         pq.push(node, priority);
         vec_remaining40.push((node, priority));
     }
