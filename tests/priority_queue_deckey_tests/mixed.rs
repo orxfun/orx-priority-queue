@@ -1,11 +1,12 @@
 use itertools::Itertools;
+use orx_iterable::Collection;
 use orx_priority_queue::{NodeKeyRef, PriorityQueueDecKey};
 use rand::Rng;
 use std::collections::HashSet;
 
 pub fn test_mixed<P>(mut pq: P)
 where
-    P: PriorityQueueDecKey<usize, f64>,
+    P: PriorityQueueDecKey<usize, f64> + Collection<Item = (usize, f64)>,
 {
     const INITIAL_LEN: usize = 10;
     const LEN: usize = 125;

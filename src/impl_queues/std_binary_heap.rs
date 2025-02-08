@@ -5,8 +5,12 @@ where
     K: PartialOrd + Ord,
     N: Ord,
 {
-    type NodeKey<'a> = &'a (N, K) where Self: 'a, N: 'a, K: 'a;
-    type Iter<'a> = alloc::collections::binary_heap::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
+    type NodeKey<'a>
+        = &'a (N, K)
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
 
     #[inline(always)]
     fn len(&self) -> usize {
@@ -52,10 +56,5 @@ where
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
         alloc::collections::BinaryHeap::push(self, (node, key));
         alloc::collections::BinaryHeap::pop(self).expect("queue cannot be empty")
-    }
-
-    #[inline(always)]
-    fn iter(&self) -> Self::Iter<'_> {
-        self.iter()
     }
 }

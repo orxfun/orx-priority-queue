@@ -1,4 +1,7 @@
-use crate::{positions::map::Index, DaryHeap, DaryHeapOfIndices, DaryHeapWithMap, HasIndex};
+use crate::{
+    dary::daryheap_const_helpers::offset, positions::map::Index, DaryHeap, DaryHeapOfIndices,
+    DaryHeapWithMap, HasIndex,
+};
 
 // DaryHeap
 
@@ -12,7 +15,7 @@ where
     type IntoIter = alloc::slice::Iter<'a, (N, K)>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.heap().tree().into_iter()
+        self.heap().as_slice().into_iter()
     }
 }
 
@@ -23,10 +26,10 @@ where
 {
     type Item = (N, K);
 
-    type IntoIter = alloc::vec::IntoIter<(N, K)>;
+    type IntoIter = core::iter::Skip<alloc::vec::IntoIter<(N, K)>>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.into_heap().into_tree().into_iter()
+        self.into_heap().into_tree().into_iter().skip(offset::<D>())
     }
 }
 
@@ -42,7 +45,7 @@ where
     type IntoIter = alloc::slice::Iter<'a, (N, K)>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.heap().tree().into_iter()
+        self.heap().as_slice().into_iter()
     }
 }
 
@@ -53,10 +56,10 @@ where
 {
     type Item = (N, K);
 
-    type IntoIter = alloc::vec::IntoIter<(N, K)>;
+    type IntoIter = core::iter::Skip<alloc::vec::IntoIter<(N, K)>>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.into_heap().into_tree().into_iter()
+        self.into_heap().into_tree().into_iter().skip(offset::<D>())
     }
 }
 
@@ -72,7 +75,7 @@ where
     type IntoIter = alloc::slice::Iter<'a, (N, K)>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.heap().tree().into_iter()
+        self.heap().as_slice().into_iter()
     }
 }
 
@@ -83,9 +86,9 @@ where
 {
     type Item = (N, K);
 
-    type IntoIter = alloc::vec::IntoIter<(N, K)>;
+    type IntoIter = core::iter::Skip<alloc::vec::IntoIter<(N, K)>>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.into_heap().into_tree().into_iter()
+        self.into_heap().into_tree().into_iter().skip(offset::<D>())
     }
 }

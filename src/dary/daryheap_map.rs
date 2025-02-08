@@ -221,12 +221,6 @@ where
         Self: 'a,
         N: 'a,
         K: 'a;
-    type Iter<'a>
-        = core::slice::Iter<'a, (N, K)>
-    where
-        Self: 'a,
-        N: 'a,
-        K: 'a;
 
     #[inline(always)]
     fn len(&self) -> usize {
@@ -270,11 +264,8 @@ where
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K) {
         self.heap.push_then_pop(node, key)
     }
-
-    fn iter(&self) -> Self::Iter<'_> {
-        self.as_slice().iter()
-    }
 }
+
 impl<N, K, const D: usize> PriorityQueueDecKey<N, K> for DaryHeapWithMap<N, K, D>
 where
     N: Index,

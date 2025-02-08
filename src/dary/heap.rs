@@ -22,12 +22,32 @@ where
     K: PartialOrd + Clone,
     P: HeapPositions<N>,
 {
-    pub(super) fn tree(&self) -> &[(N, K)] {
-        &self.tree
-    }
-
     pub(super) fn into_tree(self) -> Vec<(N, K)> {
         self.tree
+    }
+
+    /// Returns the nodes and keys currently in the queue as a slice;
+    /// not necessarily sorted.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use orx_priority_queue::*;
+    ///
+    /// let mut queue = QuaternaryHeapWithMap::default();
+    /// queue.push("x", 42);
+    /// queue.push("y", 7);
+    /// queue.push("z", 99);
+    ///
+    /// let slice = queue.as_slice();
+    ///
+    /// assert_eq!(3, slice.len());
+    /// assert!(slice.contains(&("x", 42)));
+    /// assert!(slice.contains(&("y", 7)));
+    /// assert!(slice.contains(&("z", 99)));
+    /// ```
+    pub(crate) fn as_slice(&self) -> &[(N, K)] {
+        &self.tree[offset::<D>()..]
     }
 
     pub fn new(capacity: Option<usize>, positions: P) -> Self {
@@ -192,31 +212,6 @@ where
             is_valid_downwards::<N, K, D>(offset::<D>(), &self.tree)
         }
     }
-
-    // additional functionalities
-    /// Returns the nodes and keys currently in the queue as a slice;
-    /// not necessarily sorted.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use orx_priority_queue::*;
-    ///
-    /// let mut queue = QuaternaryHeapWithMap::default();
-    /// queue.push("x", 42);
-    /// queue.push("y", 7);
-    /// queue.push("z", 99);
-    ///
-    /// let slice = queue.as_slice();
-    ///
-    /// assert_eq!(3, slice.len());
-    /// assert!(slice.contains(&("x", 42)));
-    /// assert!(slice.contains(&("y", 7)));
-    /// assert!(slice.contains(&("z", 99)));
-    /// ```
-    pub(crate) fn as_slice(&self) -> &[(N, K)] {
-        &self.tree[offset::<D>()..]
-    }
 }
 
 impl<N, K, P, const D: usize> PriorityQueue<N, K> for Heap<N, K, P, D>
@@ -227,12 +222,6 @@ where
 {
     type NodeKey<'a>
         = &'a (N, K)
-    where
-        Self: 'a,
-        N: 'a,
-        K: 'a;
-    type Iter<'a>
-        = core::slice::Iter<'a, (N, K)>
     where
         Self: 'a,
         N: 'a,
@@ -327,10 +316,6 @@ where
             self.heapify_down(offset::<D>());
             popped_node
         }
-    }
-
-    fn iter(&self) -> Self::Iter<'_> {
-        self.as_slice().iter()
     }
 }
 

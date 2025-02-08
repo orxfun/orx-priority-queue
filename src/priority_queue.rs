@@ -13,13 +13,6 @@ where
         N: 'a,
         K: 'a;
 
-    /// An iterator over the (node, key) pairs on the priority queue in an arbitrary order.
-    type Iter<'a>: Iterator<Item = Self::NodeKey<'a>>
-    where
-        Self: 'a,
-        N: 'a,
-        K: 'a;
-
     /// Number of elements in the queue.
     ///
     /// # Examples
@@ -244,7 +237,4 @@ where
     /// assert!(queue.is_empty());
     /// ```
     fn push_then_pop(&mut self, node: N, key: K) -> (N, K);
-
-    /// Returns an iterator visiting all values on the heap in arbitrary order.
-    fn iter(&self) -> Self::Iter<'_>;
 }
