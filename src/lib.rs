@@ -322,6 +322,7 @@
     clippy::missing_panics_doc,
     clippy::todo
 )]
+#![no_std]
 
 #[cfg(any(test, feature = "std"))]
 extern crate std;
