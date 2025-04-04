@@ -19,23 +19,23 @@ where
     pq.clear();
     assert!(pq.is_empty());
 
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     let mut vec = Vec::new();
 
     // push 100
     for node in 0..LEN {
-        let priority = rng.gen();
+        let priority = rng.random();
         pq.push(node, priority);
         vec.push((node, priority));
     }
 
     // change keys 100 times
     for _ in 0..LEN {
-        let node = rng.gen_range(0..LEN);
+        let node = rng.random_range(0..LEN);
         let old_key = vec[node].1;
         assert_eq!(Some(old_key), pq.key_of(&node));
 
-        let new_key = rng.gen::<f64>()
+        let new_key = rng.random::<f64>()
             * match change_key {
                 ChangeKeyMethod::Decrease => old_key,
                 _ => 1.0,
@@ -47,10 +47,10 @@ where
                 vec[node] = (node, new_key);
             }
             ChangeKeyMethod::Update => {
-                let res_updkey = pq.update_key(&node, new_key);
+                let res_upd_key = pq.update_key(&node, new_key);
                 assert_eq!(
                     new_key < old_key,
-                    matches!(res_updkey, ResUpdateKey::Decreased)
+                    matches!(res_upd_key, ResUpdateKey::Decreased)
                 );
                 vec[node] = (node, new_key);
             }

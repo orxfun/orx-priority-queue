@@ -9,11 +9,11 @@ where
     assert!(pq.is_empty());
     assert_eq!(None, pq.key_of(&0));
 
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     let mut vec = Vec::new();
 
     for node in 0..100 {
-        let priority = rng.gen();
+        let priority = rng.random();
         pq.push(node, priority);
         vec.push(priority);
     }
