@@ -35,21 +35,21 @@ jobs:
       run: cargo install cargo-no-std-check
       
     - name: Build
-      run: cargo build --verbose
+      run: cargo build --verbose --features impl_all
     - name: Build-32bit
       run: cargo build --verbose --target i686-unknown-linux-musl
     - name: Build-wasm
       run: cargo build --verbose --no-default-features --target wasm32v1-none
 
     - name: Test
-      run: cargo test --verbose
+      run: cargo test --verbose --features impl_all
     - name: Test-32bit
       run: cargo test --verbose --target i686-unknown-linux-musl
     - name: Check-wasm
       run: cargo check --verbose --no-default-features --target wasm32v1-none
 
     - name: Clippy
-      run: cargo clippy -- -D warnings --verbose
+      run: cargo clippy --features impl_all -- -D warnings --verbose
 
     - name: Miri
       run: cargo +nightly miri test --verbose

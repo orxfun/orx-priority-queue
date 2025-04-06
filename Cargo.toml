@@ -14,6 +14,7 @@ categories = ["algorithms", "data-structures", "mathematics", "no-std"]
 default = ["std"]
 std = []
 impl_priority_queue = ["priority-queue"]
+impl_all = ["impl_priority_queue"]
 
 [dependencies]
 priority-queue = { version = "2.3", optional = true }
