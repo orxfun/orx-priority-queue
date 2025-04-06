@@ -6,6 +6,8 @@
 
 Priority queue traits and high performance d-ary heap implementations.
 
+> **no-std**: This crate supports **no-std**; however, *std* is added as a default feature. Please include with **no-default-features** for no-std use cases: `cargo add orx-priority-queue --no-default-features`.
+
 ## A. Priority Queue Traits
 
 This crate aims to provide algorithms with the abstraction over priority queues. In order to achieve this, two traits are defined: **`PriorityQueue<N, K>`** and **`PriorityQueueDecKey<N, K>`**. The prior is a simple queue while the latter extends it by providing additional methods to change priorities of the items that already exist in the queue.
