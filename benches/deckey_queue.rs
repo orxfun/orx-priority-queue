@@ -1,6 +1,6 @@
 use criterion::{
-    black_box, criterion_group, criterion_main, measurement::WallTime, BenchmarkGroup, BenchmarkId,
-    Criterion,
+    BenchmarkGroup, BenchmarkId, Criterion, black_box, criterion_group, criterion_main,
+    measurement::WallTime,
 };
 use orx_priority_queue::*;
 use rand::prelude::*;
@@ -17,19 +17,19 @@ impl TestData {
 
         let mut push = Vec::new();
         for node in 0..n_push {
-            push.push((node, rng.gen()));
+            push.push((node, rng.random()));
         }
 
         let mut first_deckey = Vec::new();
         for _ in 0..n_deckey1 {
-            let node = rng.gen_range(0..n_push);
-            first_deckey.push((node, rng.gen()));
+            let node = rng.random_range(0..n_push);
+            first_deckey.push((node, rng.random()));
         }
 
         let mut second_deckey = Vec::new();
         for _ in 0..n_deckey2 {
-            let node = rng.gen_range(0..n_push);
-            second_deckey.push((node, rng.gen()));
+            let node = rng.random_range(0..n_push);
+            second_deckey.push((node, rng.random()));
         }
 
         Self {

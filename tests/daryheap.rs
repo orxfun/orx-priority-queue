@@ -1,7 +1,6 @@
-mod priority_queue_tests;
+#![cfg(not(miri))]
 
-use orx_priority_queue::DaryHeap;
-use priority_queue_tests::*;
+mod priority_queue_tests;
 
 #[test]
 fn test_dary_forall() {
@@ -17,6 +16,9 @@ fn test_dary_forall() {
 }
 
 fn test_dary_for<const D: usize>() {
+    use orx_priority_queue::DaryHeap;
+    use priority_queue_tests::*;
+
     let new_heap = DaryHeap::<usize, f64, D>::default;
 
     test_len(new_heap());

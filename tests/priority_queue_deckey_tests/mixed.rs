@@ -9,14 +9,14 @@ where
 {
     const INITIAL_LEN: usize = 10;
     const LEN: usize = 125;
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     pq.clear();
     assert!(pq.is_empty());
 
     for _ in 0..INITIAL_LEN {
-        let push = rng.gen_range(0..LEN);
-        let priority = rng.gen();
+        let push = rng.random_range(0..LEN);
+        let priority = rng.random();
         if !pq.contains(&push) {
             pq.push(push, priority);
         }
@@ -25,21 +25,21 @@ where
         let num_drop = if pq.is_empty() {
             0
         } else {
-            rng.gen_range(0..5)
+            rng.random_range(0..5)
         };
         let enqueued = pq.iter().map(|x| *x.node()).collect_vec();
         let mut to_drop = HashSet::new();
         for _ in 0..num_drop {
-            let ind = rng.gen_range(0..enqueued.len());
+            let ind = rng.random_range(0..enqueued.len());
             to_drop.insert(enqueued[ind]);
         }
 
         let mut to_push = vec![];
         for _ in 0..to_drop.len() {
-            let num_push = rng.gen_range(0..5);
+            let num_push = rng.random_range(0..5);
             let mut to_push_for = vec![];
             for _ in 0..num_push {
-                let ind = rng.gen_range(0..LEN);
+                let ind = rng.random_range(0..LEN);
                 if !pq.contains(&ind) {
                     to_push_for.push(ind);
                 }
@@ -54,7 +54,7 @@ where
                 if pq.len() == LEN {
                     break;
                 }
-                let priority = rng.gen();
+                let priority = rng.random();
                 if !pq.contains(push) {
                     pq.push(*push, priority);
                 }

@@ -1,9 +1,7 @@
+#![cfg(not(miri))]
+
 mod priority_queue_deckey_tests;
 mod priority_queue_tests;
-
-use orx_priority_queue::DaryHeapOfIndices;
-use priority_queue_deckey_tests::*;
-use priority_queue_tests::*;
 
 #[test]
 fn test_dary_forall() {
@@ -19,6 +17,10 @@ fn test_dary_forall() {
 }
 
 fn test_dary_for<const D: usize>() {
+    use orx_priority_queue::DaryHeapOfIndices;
+    use priority_queue_deckey_tests::*;
+    use priority_queue_tests::*;
+
     let new_heap = || DaryHeapOfIndices::<usize, f64, D>::with_index_bound(125);
 
     let change_key = [

@@ -11,11 +11,11 @@ where
     pq.clear();
     assert!(pq.is_empty());
 
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     let mut vec = Vec::new();
     for node in 0..LEN {
-        let priority = rng.gen();
+        let priority = rng.random();
         pq.push(node, priority);
         vec.push(priority);
     }
@@ -25,7 +25,7 @@ where
     // remove randomly ~60%
     let mut removed = HashSet::new();
     for (node_to_rmv, key) in vec.iter().enumerate() {
-        let do_remove = rng.gen::<f64>() < 0.6;
+        let do_remove = rng.random::<f64>() < 0.6;
         if do_remove {
             let key_removed = pq.remove(&node_to_rmv);
             assert_eq!(key, &key_removed);
