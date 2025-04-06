@@ -54,6 +54,7 @@ In addition, queue implementations are provided in this crate for the following 
 * `std::collections::BinaryHeap<(N, K)>` implements only `PriorityQueue<N, K>`,
 * `priority_queue:PriorityQueue<N, K>` implements both `PriorityQueue<N, K>` and `PriorityQueueDecKey<N, K>`
   * requires `--features impl_priority_queue`
+  * or `--features impl_all`
 
 This allows to use all the queue implementations interchangeably and pick the one fitting best to the use case.
 
