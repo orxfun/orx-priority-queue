@@ -207,7 +207,11 @@ where
     /// assert!(slice.contains(&("z", 99)));
     /// ```
     pub(crate) fn as_slice(&self) -> &[(N, K)] {
-        &self.tree[offset::<D>()..]
+        if self.tree.is_empty() {
+            &self.tree
+        } else {
+            &self.tree[offset::<D>()..]
+        }
     }
 }
 
