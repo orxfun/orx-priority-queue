@@ -20,6 +20,7 @@ pub fn test_as_slice<const D: usize>(mut pq: DaryHeap<usize, f64, D>) {
     pq.clear();
     assert!(pq.is_empty());
     let mut vec = vec![];
+    assert!(pq.as_slice().is_empty());
 
     let mut rng = rand::rng();
     for node in 0..N {
