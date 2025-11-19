@@ -1,6 +1,6 @@
 [package]
 name = "orx-priority-queue"
-version = "1.7.0"
+version = "1.8.0"
 edition = "2024"
 authors = ["orxfun <orx.ugur.arikan@gmail.com>"]
 readme = "README.md"
