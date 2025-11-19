@@ -9,6 +9,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/orxfun/orx-priority-queue/"
 keywords = ["priority", "queue", "heap", "dary", "binary"]
 categories = ["algorithms", "data-structures", "mathematics", "no-std"]
+rust-version = "1.88"
 
 [features]
 default = ["std"]
