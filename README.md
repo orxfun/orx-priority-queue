@@ -3,7 +3,6 @@
 [![orx-priority-queue crate](https://img.shields.io/crates/v/orx-priority-queue.svg)](https://crates.io/crates/orx-priority-queue)
 [![orx-priority-queue crate](https://img.shields.io/crates/d/orx-priority-queue.svg)](https://crates.io/crates/orx-priority-queue)
 [![orx-priority-queue documentation](https://docs.rs/orx-priority-queue/badge.svg)](https://docs.rs/orx-priority-queue)
-[![MSRV](https://img.shields.io/badge/MSRV-1.88.0-blue)](https://releases.rs/docs/1.88.0/)
 
 Priority queue traits and high performance d-ary heap implementations.
 

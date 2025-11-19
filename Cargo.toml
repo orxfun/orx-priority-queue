@@ -9,7 +9,6 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/orxfun/orx-priority-queue/"
 keywords = ["priority", "queue", "heap", "dary", "binary"]
 categories = ["algorithms", "data-structures", "mathematics", "no-std"]
-rust-version = "1.88"
 
 [features]
 default = ["std"]
@@ -19,7 +18,6 @@ impl_all = ["impl_priority_queue"]
 
 [dependencies]
 priority-queue = { version = "2.3", optional = true }
-
 
 [[bench]]
 name = "basic_queue"
