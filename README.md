@@ -6,7 +6,7 @@
 
 Priority queue traits and high performance d-ary heap implementations.
 
-> **no-std**: This crate supports **no-std**; however, *std* is added as a default feature. Please include with **no-default-features** for no-std use cases: `cargo add orx-priority-queue --no-default-features`.
+> **no-std**: This crate supports **no-std**; however, _std_ is added as a default feature. Please include with **no-default-features** for no-std use cases: `cargo add orx-priority-queue --no-default-features`.
 
 ## A. Priority Queue Traits
 
@@ -19,8 +19,9 @@ See [DecreaseKey](https://github.com/orxfun/orx-priority-queue/blob/main/docs/De
 ## B. d-ary Heap Implementations
 
 d-ary implementations are generalizations of the binary heap; i.e., binary heap is a special case where `D=2`. It is advantageous to have a parametrized d; as for instance, in the benchmarks defined here, `D=4` outperforms `D=2`.
-* With a large d: number of per level comparisons increases while the tree depth becomes smaller.
-* With a small d: each level requires fewer comparisons while the tree with the same number of nodes is deeper.
+
+- With a large d: number of per level comparisons increases while the tree depth becomes smaller.
+- With a small d: each level requires fewer comparisons while the tree with the same number of nodes is deeper.
 
 Further, three categories of d-ary heap implementations are introduced.
 
@@ -32,8 +33,8 @@ This is the basic d-ary heap implementing `PriorityQueue`. It is the default cho
 
 This is a d-ary heap paired up with a positions array and implements `PriorityQueueDecKey`.
 
-* It requires the nodes to implement `HasIndex` trait which is nothing but `fn index(&self) -> usize`. Note that `usize`, `u64`, etc., already implements `HasIndex`.
-* Further, it requires to know the maximum index that is expected to enter the queue. In other words, candidates are expected to come from a closed set.
+- It requires the nodes to implement `HasIndex` trait which is nothing but `fn index(&self) -> usize`. Note that `usize`, `u64`, etc., already implements `HasIndex`.
+- Further, it requires to know the maximum index that is expected to enter the queue. In other words, candidates are expected to come from a closed set.
 
 Once these conditions are satisfied, it **performs significantly faster** than the alternative decrease key queues.
 
@@ -51,30 +52,29 @@ This is the most general decrease-key queue that provides the open-set flexibili
 
 In addition, queue implementations are provided in this crate for the following external data structures:
 
-* `std::collections::BinaryHeap<(N, K)>` implements only `PriorityQueue<N, K>`,
-* `priority_queue:PriorityQueue<N, K>` implements both `PriorityQueue<N, K>` and `PriorityQueueDecKey<N, K>`
-  * requires `--features impl_priority_queue`
-  * or `--features impl_all`
+- `std::collections::BinaryHeap<(N, K)>` implements only `PriorityQueue<N, K>`,
+- `priority_queue:PriorityQueue<N, K>` implements both `PriorityQueue<N, K>` and `PriorityQueueDecKey<N, K>`
+  - requires `--features impl_priority_queue`
+  - or `--features impl_all`
 
 This allows to use all the queue implementations interchangeably and pick the one fitting best to the use case.
 
 ### Performance & Benchmarks
 
-*You may find the details of the benchmarks at [benches](https://github.com/orxfun/orx-priority-queue/blob/main/benches) folder.*
+_You may find the details of the benchmarks at [benches](https://github.com/orxfun/orx-priority-queue/blob/main/benches) folder._
 
 <img src="https://raw.githubusercontent.com/orxfun/orx-priority-queue/main/docs/bench_results.PNG" alt="https://raw.githubusercontent.com/orxfun/orx-priority-queue/main/docs/bench_results.PNG" />
 
 The table above summarizes the benchmark results of basic operations on basic queues, and queues allowing decrease key operations.
 
-* In the first benchmark, we repeatedly call `push` and `pop` operations on a queue while maintaining an average length of 100000:
-  * We observe that `BinaryHeap` (`DaryHeap<_, _, 2>`) performs almost the same as the standard binary heap.
-  * Experiments on different values of d shows that `QuaternaryHeap` (D=4) outperforms both binary heaps.
-  * Further increasing D to 8 does not improve performance.
-  * Finally, we repeat the experiments with `BinaryHeap` and `QuaternaryHeap` using the specialized [`push_then_pop`](https://docs.rs/orx-priority-queue/latest/orx_priority_queue/trait.PriorityQueue.html#tymethod.push_then_pop) operation. Note that this operation further doubles the performance, and hence, should be used whenever it fits the use case.
-* In the second benchmark, we add [`decrease_key_or_push`](https://docs.rs/orx-priority-queue/latest/orx_priority_queue/trait.PriorityQueueDecKey.html#method.decrease_key_or_push) calls to the operations. Standard binary heap is excluded since it cannot implement `PriorityQueueDecKey`.
-  * We observe that `DaryHeapOfIndices` significantly outperforms other decrease key queues.
-  * Among `BinaryHeapOfIndices` and `QuaternaryHeapOfIndices`, the latter with D=4 again performs better.
-
+- In the first benchmark, we repeatedly call `push` and `pop` operations on a queue while maintaining an average length of 100000:
+  - We observe that `BinaryHeap` (`DaryHeap<_, _, 2>`) performs almost the same as the standard binary heap.
+  - Experiments on different values of d shows that `QuaternaryHeap` (D=4) outperforms both binary heaps.
+  - Further increasing D to 8 does not improve performance.
+  - Finally, we repeat the experiments with `BinaryHeap` and `QuaternaryHeap` using the specialized [`push_then_pop`](https://docs.rs/orx-priority-queue/latest/orx_priority_queue/trait.PriorityQueue.html#tymethod.push_then_pop) operation. Note that this operation further doubles the performance, and hence, should be used whenever it fits the use case.
+- In the second benchmark, we add [`decrease_key_or_push`](https://docs.rs/orx-priority-queue/latest/orx_priority_queue/trait.PriorityQueueDecKey.html#method.decrease_key_or_push) calls to the operations. Standard binary heap is excluded since it cannot implement `PriorityQueueDecKey`.
+  - We observe that `DaryHeapOfIndices` significantly outperforms other decrease key queues.
+  - Among `BinaryHeapOfIndices` and `QuaternaryHeapOfIndices`, the latter with D=4 again performs better.
 
 ## C. Examples
 
@@ -175,8 +175,8 @@ test_priority_queue_deckey(QuaternaryHeapWithMap::default());
 
 You may see below two implementations of the Dijkstra's shortest path algorithm: one using a `PriorityQueue` and the other with a `PriorityQueueDecKey`. Please note the following:
 
-* Priority queue traits allow us to be generic over queues. Therefore, we are able to implement the algorithm once that works for any queue implementation.
-* The second implementation with a decrease key queue pushes some of the bookkeeping to the queue, and arguably leads to a cleaner algorithm implementation.
+- Priority queue traits allow us to be generic over queues. Therefore, we are able to implement the algorithm once that works for any queue implementation.
+- The second implementation with a decrease key queue pushes some of the bookkeeping to the queue, and arguably leads to a cleaner algorithm implementation.
 
 ```rust
 use orx_priority_queue::*;
