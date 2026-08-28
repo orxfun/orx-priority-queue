@@ -46,6 +46,8 @@ jobs:
         with:
           fetch-depth: 0
           ref: main
+      - name: Check out verified release commit
+        run: git reset --hard ${{ github.event.workflow_run.head_sha }}
       - uses: release-plz/action@v0.5
         with:
           command: release
