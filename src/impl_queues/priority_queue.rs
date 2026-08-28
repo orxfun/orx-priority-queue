@@ -1,5 +1,5 @@
 use crate::{
-    priority_queue::PriorityQueue, PriorityQueueDecKey, ResTryDecreaseKeyOrPush, ResUpdateKey,
+    PriorityQueueDecKey, ResTryDecreaseKeyOrPush, ResUpdateKey, priority_queue::PriorityQueue,
 };
 use std::hash::Hash;
 
@@ -8,8 +8,18 @@ where
     K: PartialOrd + Ord,
     N: Ord + Hash,
 {
-    type NodeKey<'a> = (&'a N, &'a K) where Self: 'a, N: 'a, K: 'a;
-    type Iter<'a> = priority_queue::core_iterators::Iter<'a, N, K> where Self: 'a, N: 'a, K: 'a;
+    type NodeKey<'a>
+        = (&'a N, &'a K)
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
+    type Iter<'a>
+        = priority_queue::core_iterators::Iter<'a, N, K>
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
 
     fn len(&self) -> usize {
         priority_queue::PriorityQueue::len(self)

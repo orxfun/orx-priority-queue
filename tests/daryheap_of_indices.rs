@@ -50,3 +50,22 @@ fn test_dary_for<const D: usize>() {
         .iter()
         .for_each(|change_key_method| test_change_key_or_push(new_heap(), *change_key_method));
 }
+
+#[test]
+fn from_iter_with_index_bound_heapifies_and_tracks_positions() {
+    use orx_priority_queue::{DaryHeapOfIndices, PriorityQueue, PriorityQueueDecKey};
+
+    let mut heap = DaryHeapOfIndices::<usize, _, 4>::from_iter_with_index_bound(
+        4,
+        [(0, 42), (1, 7), (2, 24), (3, 3)],
+    );
+
+    assert_eq!(heap.key_of(&0), Some(42));
+    assert_eq!(heap.key_of(&1), Some(7));
+    assert_eq!(heap.key_of(&2), Some(24));
+    assert_eq!(heap.key_of(&3), Some(3));
+    assert_eq!(heap.pop(), Some((3, 3)));
+    assert_eq!(heap.pop(), Some((1, 7)));
+    assert_eq!(heap.pop(), Some((2, 24)));
+    assert_eq!(heap.pop(), Some((0, 42)));
+}
