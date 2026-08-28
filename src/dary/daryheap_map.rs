@@ -138,6 +138,9 @@ where
     }
 }
 
+/// Creates a d-ary heap from an iterator in linear time.
+///
+/// The iterator must not contain the same node more than once.
 impl<N, K, const D: usize> FromIterator<(N, K)> for DaryHeapWithMap<N, K, D>
 where
     N: Index,
@@ -150,6 +153,7 @@ where
     }
 }
 
+/// The iterator must not contain the same node more than once.
 impl<N, K, const D: usize> DaryHeapWithMap<N, K, D>
 where
     N: Index,

@@ -44,7 +44,6 @@ where
             tree = padded_tree;
 
             for (position, (node, _key)) in tree.iter().enumerate().skip(heap_offset) {
-                // for position in heap_offset..tree.len() {
                 positions.insert(node, position);
             }
 
