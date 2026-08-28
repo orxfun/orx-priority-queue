@@ -1,5 +1,5 @@
 use super::heap::Heap;
-use crate::{positions::none::HeapPositionsNone, PriorityQueue};
+use crate::{PriorityQueue, positions::none::HeapPositionsNone};
 
 /// Type alias for `DaryHeap<N, K, 2>`; see [`DaryHeap`] for details.
 pub type BinaryHeap<N, K> = DaryHeap<N, K, 2>;
@@ -75,6 +75,19 @@ where
         }
     }
 }
+
+impl<N, K, const D: usize> FromIterator<(N, K)> for DaryHeap<N, K, D>
+where
+    N: Clone,
+    K: PartialOrd + Clone,
+{
+    fn from_iter<I: IntoIterator<Item = (N, K)>>(iter: I) -> Self {
+        Self {
+            heap: Heap::from_iter(iter, HeapPositionsNone),
+        }
+    }
+}
+
 impl<N, K, const D: usize> DaryHeap<N, K, D>
 where
     N: Clone,

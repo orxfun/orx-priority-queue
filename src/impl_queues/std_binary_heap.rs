@@ -5,8 +5,18 @@ where
     K: PartialOrd + Ord,
     N: Ord,
 {
-    type NodeKey<'a> = &'a (N, K) where Self: 'a, N: 'a, K: 'a;
-    type Iter<'a> = alloc::collections::binary_heap::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
+    type NodeKey<'a>
+        = &'a (N, K)
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
+    type Iter<'a>
+        = alloc::collections::binary_heap::Iter<'a, (N, K)>
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
 
     #[inline(always)]
     fn len(&self) -> usize {

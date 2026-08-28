@@ -1,8 +1,6 @@
 use super::heap::Heap;
-use crate::{
-    positions::map::{HeapPositionsMap, Index},
-    PriorityQueue, PriorityQueueDecKey, ResUpdateKey,
-};
+use crate::positions::map::{HeapPositionsMap, Index};
+use crate::{PriorityQueue, PriorityQueueDecKey, ResUpdateKey};
 
 /// Type alias for `DaryHeapWithMap<N, K, 2>`; see [`DaryHeapWithMap`] for details.
 pub type BinaryHeapWithMap<N, K> = DaryHeapWithMap<N, K, 2>;
@@ -139,6 +137,23 @@ where
         }
     }
 }
+
+/// Creates a d-ary heap from an iterator in linear time.
+///
+/// The iterator must not contain the same node more than once.
+impl<N, K, const D: usize> FromIterator<(N, K)> for DaryHeapWithMap<N, K, D>
+where
+    N: Index,
+    K: PartialOrd + Clone,
+{
+    fn from_iter<I: IntoIterator<Item = (N, K)>>(iter: I) -> Self {
+        Self {
+            heap: Heap::from_iter(iter, HeapPositionsMap::default()),
+        }
+    }
+}
+
+/// The iterator must not contain the same node more than once.
 impl<N, K, const D: usize> DaryHeapWithMap<N, K, D>
 where
     N: Index,
@@ -207,8 +222,18 @@ where
     N: Index,
     K: PartialOrd + Clone,
 {
-    type NodeKey<'a> = &'a (N, K) where Self: 'a, N: 'a, K: 'a;
-    type Iter<'a> = core::slice::Iter<'a, (N, K)> where Self: 'a, N: 'a, K: 'a;
+    type NodeKey<'a>
+        = &'a (N, K)
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
+    type Iter<'a>
+        = core::slice::Iter<'a, (N, K)>
+    where
+        Self: 'a,
+        N: 'a,
+        K: 'a;
 
     #[inline(always)]
     fn len(&self) -> usize {

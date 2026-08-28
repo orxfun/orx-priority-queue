@@ -31,3 +31,21 @@ fn test_dary_for<const D: usize>() {
     test_push_then_pop(new_heap());
     test_push_then_pop_randomized(new_heap());
 }
+
+#[test]
+fn from_iter_heapifies() {
+    use orx_priority_queue::PriorityQueue;
+
+    let mut heap = [(0, 42), (1, 7), (2, 24), (3, 3), (4, 99), (5, 11)]
+        .into_iter()
+        .collect::<orx_priority_queue::QuaternaryHeap<_, _>>();
+
+    assert_eq!(heap.len(), 6);
+    assert_eq!(heap.pop(), Some((3, 3)));
+    assert_eq!(heap.pop(), Some((1, 7)));
+    assert_eq!(heap.pop(), Some((5, 11)));
+    assert_eq!(heap.pop(), Some((2, 24)));
+    assert_eq!(heap.pop(), Some((0, 42)));
+    assert_eq!(heap.pop(), Some((4, 99)));
+    assert_eq!(heap.pop(), None);
+}

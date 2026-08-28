@@ -1,7 +1,7 @@
 use super::daryheap_const_helpers::{left_child_of, offset, parent_of};
 use crate::{
-    positions::heap_positions::{HeapPositions, HeapPositionsDecKey},
     PriorityQueue, PriorityQueueDecKey, ResUpdateKey,
+    positions::heap_positions::{HeapPositions, HeapPositionsDecKey},
 };
 use alloc::vec::Vec;
 
@@ -28,6 +28,33 @@ where
             None => Vec::new(),
         };
         Self { tree, positions }
+    }
+
+    pub fn from_iter<I>(iter: I, mut positions: P) -> Self
+    where
+        I: IntoIterator<Item = (N, K)>,
+    {
+        let mut tree: Vec<_> = iter.into_iter().collect();
+
+        if let Some((node, key)) = tree.first().cloned() {
+            let heap_offset = offset::<D>();
+            let mut padded_tree = Vec::with_capacity(tree.len() + heap_offset);
+            padded_tree.extend((0..heap_offset).map(|_| (node.clone(), key.clone())));
+            padded_tree.append(&mut tree);
+            tree = padded_tree;
+
+            for (position, (node, _key)) in tree.iter().enumerate().skip(heap_offset) {
+                positions.insert(node, position);
+            }
+
+            let mut heap = Self { tree, positions };
+            for position in (heap_offset..heap.tree.len()).rev() {
+                heap.heapify_down(position);
+            }
+            heap
+        } else {
+            Self { tree, positions }
+        }
     }
 
     fn insert_offset(&mut self, node: &N, key: &K) {

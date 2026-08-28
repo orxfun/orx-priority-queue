@@ -1,8 +1,6 @@
 use super::heap::Heap;
-use crate::{
-    positions::has_index::HeapPositionsHasIndex, HasIndex, PriorityQueue, PriorityQueueDecKey,
-    ResUpdateKey,
-};
+use crate::positions::has_index::HeapPositionsHasIndex;
+use crate::{HasIndex, PriorityQueue, PriorityQueueDecKey, ResUpdateKey};
 
 /// Type alias for `DaryHeapOfIndices<N, K, 2>`; see [`DaryHeapOfIndices`] for details.
 pub type BinaryHeapOfIndices<N, K> = DaryHeapOfIndices<N, K, 2>;
@@ -147,6 +145,18 @@ where
     N: HasIndex,
     K: PartialOrd + Clone,
 {
+    /// Creates a d-ary heap from an iterator in linear time.
+    ///
+    /// The `index_bound` is the exclusive upper bound of node indices that may enter the heap.
+    pub fn from_iter_with_index_bound<I>(index_bound: usize, iter: I) -> Self
+    where
+        I: IntoIterator<Item = (N, K)>,
+    {
+        Self {
+            heap: Heap::from_iter(iter, HeapPositionsHasIndex::with_index_bound(index_bound)),
+        }
+    }
+
     /// As explained in [`DaryHeapOfIndices`],
     /// this heap is useful when the nodes come from a closed set with a known size.
     /// Therefore, the heap has a strict exclusive upper bound on the index of a node which can enter the heap,
