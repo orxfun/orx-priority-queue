@@ -9,7 +9,7 @@ where
     P: PriorityQueueDecKey<usize, f64>,
 {
     fn push_at_first_pass(i: usize) -> bool {
-        i % 3 != 0
+        !i.is_multiple_of(3)
     }
 
     pq.clear();
