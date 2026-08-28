@@ -43,8 +43,9 @@ where
             padded_tree.append(&mut tree);
             tree = padded_tree;
 
-            for position in heap_offset..tree.len() {
-                positions.insert(&tree[position].0, position);
+            for (position, (node, _key)) in tree.iter().enumerate().skip(heap_offset) {
+                // for position in heap_offset..tree.len() {
+                positions.insert(node, position);
             }
 
             let mut heap = Self { tree, positions };
